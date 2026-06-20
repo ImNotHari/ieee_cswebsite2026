@@ -1,0 +1,143 @@
+.dashboard-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.dashboard-navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 2rem;
+  margin: 1.5rem 2rem 0 2rem;
+  border-radius: 100px;
+}
+
+.dashboard-nav-right {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.profile-icon {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  border: 2px solid var(--sky-aqua);
+  box-shadow: 0 0 10px rgba(50, 203, 255, 0.2);
+}
+
+.logout-btn {
+  padding: 0.5rem 1.5rem;
+  border-radius: 4px;
+  border: 1px solid var(--text-primary);
+  color: var(--text-primary);
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.logout-btn:hover {
+  background: var(--sky-aqua);
+  color: var(--graphite);
+  border-color: var(--sky-aqua);
+}
+
+.dashboard-container {
+  display: flex;
+  min-height: 100vh;
+  gap: 2rem;
+  padding: 2rem;
+  box-sizing: border-box;
+}
+
+.dashboard-sidebar {
+  width: 250px;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  height: calc(100vh - 4rem);
+  position: sticky;
+  top: 2rem;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.dashboard-sidebar.closed {
+  width: 0;
+  padding: 0;
+  margin: 0;
+  opacity: 0;
+}
+
+.custum-file-upload {
+  height: 200px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed var(--text-primary);
+  background-color: var(--bg-color);
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-sizing: border-box;
+}
+
+.custum-file-upload .icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.custum-file-upload .icon svg {
+  height: 80px;
+  fill: var(--text-primary);
+}
+
+.custum-file-upload .text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.custum-file-upload .text span {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.custum-file-upload input {
+  display: none;
+}
+
+.sidebar-links {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.sidebar-links li {
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.sidebar-links li:hover, .sidebar-links li.active {
+  color: var(--sky-aqua);
+}
+
+.dashboard-main {
+  flex: 1;
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  height: calc(100vh - 4rem);
+  overflow-y: auto;
+}
