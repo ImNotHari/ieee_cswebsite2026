@@ -1,5 +1,4 @@
 import './HeroSection.css';
-import AnimatedButton from './AnimatedButton';
 import AnimatedFace from './AnimatedFace';
 
 const HeroSection = () => {
@@ -14,7 +13,6 @@ const HeroSection = () => {
         <p className="hero-subtext">
           Welcome to the future of our community. Explore the boundaries of technology and design with us.
         </p>
-        <AnimatedButton>Join the Community</AnimatedButton>
       </div>
       
       <div className="hero-right animate-fade-in-up stagger-2 glass-panel">
