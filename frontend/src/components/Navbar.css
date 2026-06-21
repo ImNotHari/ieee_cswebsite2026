@@ -1,15 +1,15 @@
 .navbar {
   position: fixed;
-  top: 1.5rem;
-  left: 5%;
-  width: 90%;
+  top: 0;
+  left: 0;
+  width: 100%;
   height: var(--nav-height);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 2.5rem;
+  padding: 0 5%;
   z-index: 1000;
-  border-radius: 100px;
+  border-radius: 0 !important;
 }
 
 .nav-links {
