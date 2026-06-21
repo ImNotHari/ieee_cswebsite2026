@@ -1,21 +1,166 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import AnimatedFace from '../components/AnimatedFace';
+import { supabase } from '../lib/supabase';
 import './MemberDashboard.css';
 
 const MemberDashboard = () => {
   const [activeTab, setActiveTab] = useState('add');
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(true);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) setIsAuthenticated(false);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsAuthenticated(!!session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+  
+  // Form State
+  const [title, setTitle] = useState('');
+  const [eventDate, setEventDate] = useState('');
+  const [time, setTime] = useState('');
+  const [location, setLocation] = useState('');
+  const [description, setDescription] = useState('');
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  
+  // UI State
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState({ text: '', type: '' });
+  
+  // Events List State
+  const [events, setEvents] = useState<any[]>([]);
+  const [loadingEvents, setLoadingEvents] = useState(false);
+
+  useEffect(() => {
+    if (activeTab === 'view') {
+      fetchEvents();
+    }
+  }, [activeTab]);
+
+  const fetchEvents = async () => {
+    setLoadingEvents(true);
+    const { data, error } = await supabase.from('events').select('*').order('created_at', { ascending: false });
+    if (!error && data) {
+      setEvents(data);
+    }
+    setLoadingEvents(false);
+  };
+
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let val = e.target.value.replace(/\D/g, ''); // Remove non-digits
+    if (val.length >= 2) val = val.substring(0, 2) + '-' + val.substring(2);
+    if (val.length >= 5) {
+      val = val.substring(0, 5) + '-' + val.substring(5, 9);
+      const yearStr = val.substring(6, 10);
+      if (yearStr.length === 4 && parseInt(yearStr) > 2030) {
+        val = val.substring(0, 6) + '2030';
+      }
+    }
+    setEventDate(val);
+  };
+
+  const handlePublish = async () => {
+    setMessage({ text: '', type: '' });
+    
+    if (!title || !eventDate || !time) {
+      setMessage({ text: 'Title, Date, and Time are required!', type: 'error' });
+      return;
+    }
+
+    // Convert dd-mm-yyyy to yyyy-mm-dd
+    const parts = eventDate.split('-');
+    if (parts.length !== 3 || parts[2].length !== 4) {
+      setMessage({ text: 'Please complete the date (dd-mm-yyyy)', type: 'error' });
+      return;
+    }
+    const dbDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+
+    // Validate that it's a real calendar date (e.g., catching Feb 30th)
+    const parsedDate = new Date(dbDate);
+    if (isNaN(parsedDate.getTime()) || parsedDate.toISOString().slice(0, 10) !== dbDate) {
+      setMessage({ text: 'Invalid calendar date. Please check the day and month.', type: 'error' });
+      return;
+    }
+
+    setLoading(true);
+    let posterPath = null;
+
+    // Upload Image
+    if (selectedFile) {
+      const fileExt = selectedFile.name.split('.').pop();
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('posters')
+        .upload(fileName, selectedFile);
+
+      if (uploadError) {
+        setMessage({ text: `Image upload failed: ${uploadError.message}`, type: 'error' });
+        setLoading(false);
+        return;
+      }
+      posterPath = uploadData.path;
+    }
+
+    // Insert Event
+    const { error: insertError } = await supabase.from('events').insert({
+      title,
+      date: dbDate,
+      time,
+      location,
+      description,
+      poster_path: posterPath,
+      is_published: true // auto-publish for now
+    });
+
+    if (insertError) {
+      setMessage({ text: `Failed to save event: ${insertError.message}`, type: 'error' });
+    } else {
+      setMessage({ text: 'Event published successfully!', type: 'success' });
+      // Reset form
+      setTitle('');
+      setEventDate('');
+      setTime('');
+      setLocation('');
+      setDescription('');
+      setSelectedFile(null);
+    }
+    setLoading(false);
+  };
 
   return (
-    <div className="dashboard-layout">
-      <nav className="dashboard-navbar glass-panel">
+    <>
+      {!isAuthenticated && (
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(15, 23, 42, 0.9)', backdropFilter: 'blur(10px)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div className="glass-panel" style={{ padding: '3rem', textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '1.5rem', alignItems: 'center' }}>
+            <h2 className="gradient-text" style={{ fontSize: '2rem' }}>Session Expired</h2>
+            <p style={{ color: 'var(--text-secondary)' }}>Please log in to access the Member Area.</p>
+            <a href="#/login" className="publish-btn" style={{ textDecoration: 'none' }}>Go to Login</a>
+          </div>
+        </div>
+      )}
+      <div className="dashboard-layout">
+        <nav className="dashboard-navbar glass-panel">
         <div className="dashboard-logo" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
           <button onClick={() => setSidebarOpen(!sidebarOpen)} style={{ background: 'none', border: 'none', color: 'white', fontSize: '1.5rem', cursor: 'pointer' }}>☰</button>
           <img src="/ieee-logo-geci.png" alt="Logo" style={{ height: '80px', objectFit: 'contain' }} />
         </div>
         <div className="dashboard-nav-right">
           <img src="https://ui-avatars.com/api/?name=Member&background=32cbff&color=fff&rounded=true" alt="Profile" className="profile-icon" />
-          <a href="#/login" className="logout-btn">Logout</a>
+          <button 
+            className="logout-btn" 
+            style={{ background: 'transparent', cursor: 'pointer' }}
+            onClick={async () => {
+              await supabase.auth.signOut();
+              window.location.hash = '';
+            }}
+          >
+            Logout
+          </button>
         </div>
       </nav>
       <div className="dashboard-container animate-fade-in-up">
@@ -32,20 +177,77 @@ const MemberDashboard = () => {
             <>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <h1 className="gradient-text">Add New Event</h1>
-                <button type="button" className="logout-btn" style={{ background: 'var(--sky-aqua)', color: 'var(--graphite)', border: 'none' }}>Publish Event</button>
+                <button type="button" className="publish-btn" onClick={handlePublish} disabled={loading}>
+                  {loading ? 'Publishing...' : 'Publish Event'}
+                </button>
               </div>
-              <form style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '500px', marginTop: '1rem' }}>
-                <input type="text" placeholder="Event Title" style={{ padding: '1rem', borderRadius: '8px', background: 'var(--bg-color)', border: '1px solid var(--text-primary)', color: 'white', fontSize: '1rem' }} />
-                <input type="date" style={{ padding: '1rem', borderRadius: '8px', background: 'var(--bg-color)', border: '1px solid var(--text-primary)', color: 'white', fontSize: '1rem' }} />
-                
-                <label htmlFor="file" className="custum-file-upload" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '2rem', background: 'var(--bg-color)', border: '1px dashed var(--text-primary)', borderRadius: '8px', cursor: 'pointer' }}>
-                  <div className="text" style={{ fontSize: '1.2rem', color: 'white' }}>
-                    <span>&#128194; Click to upload image</span>
-                  </div>
-                  <input id="file" type="file" accept="image/*" style={{ display: 'none' }} />
-                </label>
+              
+              {message.text && (
+                <div style={{ padding: '1rem', borderRadius: '8px', background: message.type === 'error' ? 'rgba(255, 0, 0, 0.1)' : 'rgba(0, 255, 0, 0.1)', color: message.type === 'error' ? '#ff6b6b' : '#51cf66', border: `1px solid ${message.type === 'error' ? '#ff6b6b' : '#51cf66'}` }}>
+                  {message.text}
+                </div>
+              )}
 
-                <textarea placeholder="Event Description" style={{ padding: '1rem', borderRadius: '8px', background: 'var(--bg-color)', border: '1px solid var(--text-primary)', color: 'white', fontSize: '1rem', minHeight: '150px' }} />
+              <form style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '500px', marginTop: '1rem' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                  <label style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Event Title</label>
+                  <input type="text" placeholder="Enter the event title..." value={title} onChange={e => setTitle(e.target.value)} style={{ padding: '1rem', borderRadius: '8px', background: 'var(--bg-color)', border: '1px solid var(--text-primary)', color: 'white', fontSize: '1rem' }} />
+                </div>
+                
+                <div style={{ display: 'flex', gap: '1rem' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1 }}>
+                    <label style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Date (dd-mm-yyyy)</label>
+                    <input type="text" placeholder="dd-mm-yyyy" maxLength={10} value={eventDate} onChange={handleDateChange} style={{ padding: '1rem', borderRadius: '8px', background: 'var(--bg-color)', border: '1px solid var(--text-primary)', color: 'white', fontSize: '1rem' }} />
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1 }}>
+                    <label style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Time</label>
+                    <input type="time" step="60" value={time} onChange={e => setTime(e.target.value)} style={{ padding: '1rem', borderRadius: '8px', background: 'var(--bg-color)', border: '1px solid var(--text-primary)', color: 'white', fontSize: '1rem' }} />
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                  <label style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Location (Optional)</label>
+                  <input type="text" placeholder="e.g. Main Auditorium" value={location} onChange={e => setLocation(e.target.value)} style={{ padding: '1rem', borderRadius: '8px', background: 'var(--bg-color)', border: '1px solid var(--text-primary)', color: 'white', fontSize: '1rem' }} />
+                </div>
+                
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                  <label style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Event Cover Image</label>
+                  <label className="custom-file-upload" htmlFor="file">
+                  {selectedFile ? (
+                    <>
+                      <div className="icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="rgba(255, 255, 255, 0.7)" viewBox="0 0 24 24" style={{ height: '60px' }}>
+                          <path d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2ZM13 3.5L18.5 9H14C13.4477 9 13 8.55228 13 8V3.5ZM18 20H6V4H11V8C11 9.65685 12.3431 11 14 11H18V20Z" />
+                        </svg>
+                      </div>
+                      <div className="text" style={{ textAlign: 'center', wordBreak: 'break-all', padding: '0 1rem' }}>
+                        <span style={{ color: 'white' }}>{selectedFile.name}</span>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="" viewBox="0 0 24 24">
+                          <g strokeWidth="0" id="SVGRepo_bgCarrier"></g>
+                          <g strokeLinejoin="round" strokeLinecap="round" id="SVGRepo_tracerCarrier"></g>
+                          <g id="SVGRepo_iconCarrier">
+                            <path fill="" d="M10 1C9.73478 1 9.48043 1.10536 9.29289 1.29289L3.29289 7.29289C3.10536 7.48043 3 7.73478 3 8V20C3 21.6569 4.34315 23 6 23H7C7.55228 23 8 22.5523 8 22C8 21.4477 7.55228 21 7 21H6C5.44772 21 5 20.5523 5 20V9H10C10.5523 9 11 8.55228 11 8V3H18C18.5523 3 19 3.44772 19 4V9C19 9.55228 19.4477 10 20 10C20.5523 10 21 9.55228 21 9V4C21 2.34315 19.6569 1 18 1H10ZM9 7H6.41421L9 4.41421V7ZM14 15.5C14 14.1193 15.1193 13 16.5 13C17.8807 13 19 14.1193 19 15.5V16V17H20C21.1046 17 22 17.8954 22 19C22 20.1046 21.1046 21 20 21H13C11.8954 21 11 20.1046 11 19C11 17.8954 11.8954 17 13 17H14V16V15.5ZM16.5 11C14.142 11 12.2076 12.8136 12.0156 15.122C10.2825 15.5606 9 17.1305 9 19C9 21.2091 10.7909 23 13 23H20C22.2091 23 24 21.2091 24 19C24 17.1305 22.7175 15.5606 20.9844 15.122C20.7924 12.8136 18.858 11 16.5 11Z" clipRule="evenodd" fillRule="evenodd"></path>
+                          </g>
+                        </svg>
+                      </div>
+                      <div className="text">
+                        <span>Click to upload image</span>
+                      </div>
+                    </>
+                  )}
+                  <input type="file" id="file" accept="image/*" onChange={(e) => setSelectedFile(e.target.files?.[0] || null)} />
+                </label>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                  <label style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Event Description</label>
+                  <textarea placeholder="Write something about the event..." value={description} onChange={e => setDescription(e.target.value)} style={{ padding: '1rem', borderRadius: '8px', background: 'var(--bg-color)', border: '1px solid var(--text-primary)', color: 'white', fontSize: '1rem', minHeight: '150px' }} />
+                </div>
               </form>
             </>
           )}
@@ -59,17 +261,54 @@ const MemberDashboard = () => {
             </div>
           )}
           {activeTab === 'view' && (
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
-              <h1 className="gradient-text" style={{ alignSelf: 'flex-start' }}>My Events</h1>
-              <p style={{ color: 'var(--text-secondary)', alignSelf: 'flex-start' }}>You haven't published any events yet.</p>
-              <div style={{ transform: 'scale(0.7)', marginTop: '-50px' }}>
-                <AnimatedFace />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', width: '100%' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <h1 className="gradient-text">My Events</h1>
+                <button className="publish-btn" onClick={fetchEvents} style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}>Refresh</button>
               </div>
+              
+              {loadingEvents ? (
+                <p style={{ color: 'var(--text-secondary)' }}>Loading events...</p>
+              ) : events.length === 0 ? (
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
+                  <p style={{ color: 'var(--text-secondary)' }}>You haven't published any events yet.</p>
+                  <div style={{ transform: 'scale(0.7)', marginTop: '-50px' }}>
+                    <AnimatedFace />
+                  </div>
+                </div>
+              ) : (
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.5rem' }}>
+                  {events.map(event => (
+                    <div key={event.id} className="glass-panel" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem', border: '1px solid rgba(255,255,255,0.1)' }}>
+                      {event.poster_path && (
+                        <img 
+                          src={`${supabase.storage.from('posters').getPublicUrl(event.poster_path).data.publicUrl}`} 
+                          alt={event.title} 
+                          style={{ width: '100%', height: '150px', objectFit: 'cover', borderRadius: '8px' }} 
+                        />
+                      )}
+                      <div>
+                        <h3 style={{ color: 'white', margin: '0 0 0.5rem 0', fontSize: '1.2rem' }}>{event.title}</h3>
+                        <div style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
+                          <span>{new Date(event.date).toLocaleDateString()} at {event.time.slice(0, 5)}</span>
+                          {event.location && <span>{event.location}</span>}
+                        </div>
+                      </div>
+                      {event.description && (
+                        <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.9rem', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden', margin: 0 }}>
+                          {event.description}
+                        </p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </main>
       </div>
-    </div>
+      </div>
+    </>
   );
 };
 

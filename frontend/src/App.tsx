@@ -4,6 +4,7 @@ import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import MemberDashboard from './pages/MemberDashboard';
 import AnimatedFace from './components/AnimatedFace';
+import EventsPage from './pages/EventsPage';
 import './App.css';
 
 const App = () => {
@@ -22,7 +23,10 @@ const App = () => {
     if (hash === '#/login') {
       return <LoginPage />;
     }
-    if (hash === '#/events' || hash === '#/blog') {
+    if (hash === '#/events') {
+      return <EventsPage />;
+    }
+    if (hash === '#/blog') {
       return (
         <div className="page-container" style={{ marginTop: '120px' }}>
           <AnimatedFace />

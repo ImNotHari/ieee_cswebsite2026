@@ -5,7 +5,6 @@ const Navbar = () => {
     <nav className="navbar glass-panel animate-fade-in-up">
       <div className="nav-links">
         <a href="#about" className="nav-btn">About</a>
-        <a href="#hero" className="nav-btn">Hero</a>
         <a href="#achievements" className="nav-btn">Achievements</a>
         <a href="#excecom" className="nav-btn">Excecom</a>
         <a href="#/events" className="nav-btn">Events</a>
