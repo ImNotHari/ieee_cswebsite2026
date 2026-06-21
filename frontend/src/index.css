@@ -23,7 +23,7 @@
   --nav-height: 100px;
 }
 
-* {
+*, *::before, *::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -129,7 +129,7 @@ body {
 
 /* Section Title */
 .section-title {
-  font-size: 3rem;
+  font-size: clamp(2rem, 5vw, 3rem);
   font-weight: 700;
   margin-bottom: 2rem;
   text-align: center;
