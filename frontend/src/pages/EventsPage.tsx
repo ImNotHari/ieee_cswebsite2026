@@ -26,9 +26,7 @@ const EventsPage = () => {
   };
 
   return (
-    <div className="page-container" style={{ position: 'relative', padding: '0 2rem 4rem 2rem', maxWidth: '1200px', margin: '120px auto 0 auto' }}>
-      {/* Glow effect behind the navbar for the frosted glass */}
-      <div style={{ position: 'absolute', top: '-120px', left: '50%', transform: 'translateX(-50%)', width: '100vw', height: '400px', background: 'radial-gradient(ellipse at top, rgba(50, 203, 255, 0.15), transparent 70%)', zIndex: -1, pointerEvents: 'none' }}></div>
+    <div className="page-container" style={{ padding: 'calc(var(--nav-height) + 4rem) 2rem 4rem 2rem', maxWidth: '1200px', margin: '0 auto' }}>
       <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
         <h1 className="gradient-text animate-fade-in-up stagger-1" style={{ fontSize: '3rem', marginBottom: '1rem' }}>Upcoming Events</h1>
         <p style={{ color: 'var(--text-secondary)', fontSize: '1.2rem' }} className="animate-fade-in-up stagger-2">
