@@ -216,6 +216,8 @@
     gap: 1.5rem;
     transition: right 0.3s ease;
     outline: none;
+    background: var(--bg-secondary);
+    border-left: 1px solid rgba(255, 255, 255, 0.05);
   }
   
   .mobile-menu-overlay.open .mobile-menu-content {

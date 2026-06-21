@@ -69,7 +69,7 @@ const Navbar = () => {
         onClick={closeMenu}
       >
         <div 
-          className="mobile-menu-content glass-panel" 
+          className="mobile-menu-content" 
           onClick={(e) => e.stopPropagation()}
           ref={menuRef}
           tabIndex={-1}
