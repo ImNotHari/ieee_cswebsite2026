@@ -66,6 +66,13 @@ const MemberDashboard = () => {
 
   const handlePublish = async () => {
     setMessage({ text: '', type: '' });
+
+    // Force a session check before doing anything
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      setIsAuthenticated(false);
+      return;
+    }
     
     if (!title || !eventDate || !time) {
       setMessage({ text: 'Title, Date, and Time are required!', type: 'error' });
