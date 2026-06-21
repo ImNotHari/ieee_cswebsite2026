@@ -41,6 +41,7 @@ const LoginPage = () => {
           type="email" 
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          autoComplete="email"
           required
         />
         <div style={{ position: 'relative', width: '100%', display: 'flex' }}>
@@ -51,6 +52,7 @@ const LoginPage = () => {
             type={showPassword ? 'text' : 'password'} 
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            autoComplete="current-password"
             required
             style={{ width: '100%', paddingRight: '2.5rem' }}
           />
@@ -65,7 +67,7 @@ const LoginPage = () => {
               background: 'none', 
               border: 'none', 
               cursor: 'pointer',
-              color: 'var(--text-secondary)',
+              color: 'var(--font-color-sub)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center'
