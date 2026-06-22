@@ -69,7 +69,7 @@
 }
 
 .event-card__meta {
-  color: var(--sky-aqua);
+  color: var(--accent-color);
   font-size: 0.9rem;
   display: flex;
   flex-direction: column;

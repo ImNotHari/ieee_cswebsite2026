@@ -16,8 +16,8 @@ const GridBackground = () => {
       fadeDuration: { min: 150, max: 300 },
       holdDuration: { min: 20, max: 60 },
       cellAlpha: 0.35,
-      gridColor: 'rgba(114, 114, 114, 0.18)',
-      cellColor: '114, 114, 114',
+      gridColor: 'rgba(140, 140, 140, 0.15)',
+      cellColor: '204, 123, 47',
     };
 
     let W = 0;
@@ -167,7 +167,7 @@ const GridBackground = () => {
         height: '100%',
         zIndex: -1,
         pointerEvents: 'none',
-        backgroundColor: '#191a1a',
+        backgroundColor: '#000000',
       }}
     />
   );

@@ -53,7 +53,7 @@
 .publish-btn {
   padding: 0.5rem 1.5rem;
   border-radius: 8px;
-  background: var(--sky-aqua);
+  background: var(--accent-color);
   color: var(--graphite);
   border: none;
   font-weight: 500;
@@ -74,7 +74,7 @@
   margin-top: 1rem;
   padding: 1rem;
   font-size: 1.1rem;
-  background: var(--sky-aqua);
+  background: var(--accent-color);
   color: var(--graphite);
   border-radius: 8px;
 }
@@ -133,7 +133,7 @@
 }
 
 .custom-file-upload:hover {
-  border-color: var(--sky-aqua);
+  border-color: var(--accent-color);
   background-color: rgba(255, 255, 255, 0.1);
 }
 
@@ -179,7 +179,7 @@
 }
 
 .sidebar-links li:hover, .sidebar-links li.active {
-  color: var(--sky-aqua);
+  color: var(--accent-color);
 }
 
 .dashboard-main {
@@ -257,8 +257,8 @@ input[type="time"]::-webkit-calendar-picker-indicator:hover {
 
 .form-input:focus {
   outline: none;
-  border-color: var(--sky-aqua);
-  box-shadow: 0 0 0 2px rgba(50, 203, 255, 0.2);
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 2px rgba(204, 123, 47, 0.2);
 }
 
 .form-section {
@@ -277,19 +277,19 @@ input[type="time"]::-webkit-calendar-picker-indicator:hover {
 .dashboard-section-title {
   font-size: 1.1rem;
   font-weight: 600;
-  color: var(--sky-aqua);
+  color: var(--accent-color);
   margin: 0 0 0.5rem 0;
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
 
-.section-title::before {
+.dashboard-section-title::before {
   content: '';
   display: block;
   width: 4px;
   height: 16px;
-  background: var(--sky-aqua);
+  background: var(--accent-color);
   border-radius: 4px;
 }
 

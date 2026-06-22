@@ -8,7 +8,7 @@
 }
 
 .form {
-  --input-focus: #32cbff;
+  --input-focus: var(--accent-color);
   --font-color: #fefefe;
   --font-color-sub: #7e7e7e;
   --bg-color: #111;
