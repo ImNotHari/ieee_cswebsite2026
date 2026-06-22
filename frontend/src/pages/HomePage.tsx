@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import HeroSection from '../components/HeroSection';
 import AboutSection from '../components/AboutSection';
 import AnimatedFace from '../components/AnimatedFace';
+// @ts-ignore
 import ProfileCard from '../components/ProfileCard';
 
 const excecomMembers = [
