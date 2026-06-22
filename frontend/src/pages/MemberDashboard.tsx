@@ -158,8 +158,23 @@ const MemberDashboard = () => {
           <button onClick={() => setSidebarOpen(!sidebarOpen)} style={{ background: 'none', border: 'none', color: 'white', fontSize: '1.5rem', cursor: 'pointer' }}>☰</button>
           <img src="/ieee-logo-geci.png" alt="Logo" className="dashboard-logo-img" />
         </div>
-        <div className="dashboard-nav-right" style={{ position: 'relative' }}>
+        <div className="dashboard-nav-right" style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          
+          {/* Desktop View */}
+          <img src="https://ui-avatars.com/api/?name=Member&background=32cbff&color=fff&rounded=true" alt="Profile" className="profile-icon desktop-only" />
           <button 
+            className="logout-btn desktop-only" 
+            onClick={async () => {
+              await supabase.auth.signOut();
+              window.location.hash = '';
+            }}
+          >
+            Logout
+          </button>
+
+          {/* Mobile View */}
+          <button 
+            className="mobile-only"
             onClick={() => setProfileDropdownOpen(!profileDropdownOpen)} 
             style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
           >
@@ -167,7 +182,7 @@ const MemberDashboard = () => {
           </button>
           
           {profileDropdownOpen && (
-            <div className="profile-dropdown" style={{ position: 'absolute', top: '100%', right: 0, marginTop: '0.5rem', background: 'rgba(15, 23, 42, 0.95)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '8px', padding: '0.5rem', zIndex: 1000, minWidth: '150px', boxShadow: '0 4px 12px rgba(0,0,0,0.5)' }}>
+            <div className="profile-dropdown mobile-only" style={{ position: 'absolute', top: '100%', right: 0, marginTop: '0.5rem', background: 'rgba(15, 23, 42, 0.95)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '8px', padding: '0.5rem', zIndex: 1000, minWidth: '150px', boxShadow: '0 4px 12px rgba(0,0,0,0.5)' }}>
               <button 
                 className="logout-btn" 
                 style={{ width: '100%', justifyContent: 'flex-start', color: '#ff6b6b' }}

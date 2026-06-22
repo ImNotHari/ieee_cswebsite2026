@@ -312,6 +312,17 @@
   to { bottom: 2rem; opacity: 1; }
 }
 
+@media (min-width: 769px) {
+  .mobile-only {
+    display: none !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .desktop-only {
+    display: none !important;
+  }
+}
 
 /* Tablet Spacing Only (1024px - 769px) */
 @media (max-width: 1024px) {
