@@ -284,4 +284,8 @@
     border-radius: 8px;
     min-height: 44px;
   }
+  
+  .nav-right .fancy-btn {
+    display: none;
+  }
 }

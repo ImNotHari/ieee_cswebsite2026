@@ -44,9 +44,22 @@ const GridBackground = () => {
       }
     };
 
+    let lastW = 0;
+    let lastH = 0;
+
     const resize = () => {
-      W = canvas.width = window.innerWidth;
-      H = canvas.height = window.innerHeight;
+      // Use screen.height to ensure it covers the whole screen even when the address bar hides
+      const newW = window.innerWidth;
+      const newH = Math.max(window.innerHeight, window.screen?.height || 0);
+      
+      // Only rebuild if dimensions change significantly (e.g., orientation change)
+      if (Math.abs(newW - lastW) < 50 && Math.abs(newH - lastH) < 50) return;
+      
+      lastW = newW;
+      lastH = newH;
+      
+      W = canvas.width = newW;
+      H = canvas.height = newH;
       buildCells();
     };
 

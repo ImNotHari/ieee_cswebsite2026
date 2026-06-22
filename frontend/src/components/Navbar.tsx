@@ -87,6 +87,7 @@ const Navbar = () => {
           <a href="#excecom" className="nav-btn" onClick={closeMenu}>Excecom</a>
           <a href="#/events" className="nav-btn" onClick={closeMenu}>Events</a>
           <a href="#/blog" className="nav-btn" onClick={closeMenu}>Blog</a>
+          <a href="#/login" className="nav-btn" onClick={closeMenu}>Login</a>
         </div>
       </div>
     </nav>
