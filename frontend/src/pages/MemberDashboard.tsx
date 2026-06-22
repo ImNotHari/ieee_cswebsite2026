@@ -31,6 +31,7 @@ const MemberDashboard = () => {
   // UI State
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ text: '', type: '' });
+  const [errors, setErrors] = useState<Record<string, string>>({});
   
   // Events List State
   const [events, setEvents] = useState<any[]>([]);
@@ -52,16 +53,7 @@ const MemberDashboard = () => {
   };
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let val = e.target.value.replace(/\D/g, ''); // Remove non-digits
-    if (val.length >= 2) val = val.substring(0, 2) + '-' + val.substring(2);
-    if (val.length >= 5) {
-      val = val.substring(0, 5) + '-' + val.substring(5, 9);
-      const yearStr = val.substring(6, 10);
-      if (yearStr.length === 4 && parseInt(yearStr) > 2030) {
-        val = val.substring(0, 6) + '2030';
-      }
-    }
-    setEventDate(val);
+    setEventDate(e.target.value); // type="date" automatically gives YYYY-MM-DD
   };
 
   const handlePublish = async () => {
@@ -74,23 +66,26 @@ const MemberDashboard = () => {
       return;
     }
     
-    if (!title || !eventDate || !time) {
-      setMessage({ text: 'Title, Date, and Time are required!', type: 'error' });
+    const newErrors: Record<string, string> = {};
+    if (!title) newErrors.title = 'Event Title is required';
+    if (!eventDate) newErrors.eventDate = 'Date is required';
+    if (!time) newErrors.time = 'Time is required';
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      setMessage({ text: 'Please fill in all required fields.', type: 'error' });
+      setTimeout(() => setMessage({ text: '', type: '' }), 5000);
       return;
     }
+    setErrors({});
 
-    // Convert dd-mm-yyyy to yyyy-mm-dd
-    const parts = eventDate.split('-');
-    if (parts.length !== 3 || parts[2].length !== 4) {
-      setMessage({ text: 'Please complete the date (dd-mm-yyyy)', type: 'error' });
-      return;
-    }
-    const dbDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
-
-    // Validate that it's a real calendar date (e.g., catching Feb 30th)
+    // type="date" already ensures the format is YYYY-MM-DD
+    const dbDate = eventDate;
+    
+    // Validate that it's a real calendar date
     const parsedDate = new Date(dbDate);
-    if (isNaN(parsedDate.getTime()) || parsedDate.toISOString().slice(0, 10) !== dbDate) {
-      setMessage({ text: 'Invalid calendar date. Please check the day and month.', type: 'error' });
+    if (isNaN(parsedDate.getTime())) {
+      setMessage({ text: 'Invalid calendar date.', type: 'error' });
       return;
     }
 
@@ -128,6 +123,7 @@ const MemberDashboard = () => {
       setMessage({ text: `Failed to save event: ${insertError.message}`, type: 'error' });
     } else {
       setMessage({ text: 'Event published successfully!', type: 'success' });
+      setTimeout(() => setMessage({ text: '', type: '' }), 5000);
       // Reset form
       setTitle('');
       setEventDate('');
@@ -148,6 +144,11 @@ const MemberDashboard = () => {
             <p style={{ color: 'var(--text-secondary)' }}>Please log in to access the Member Area.</p>
             <a href="#/login" className="publish-btn" style={{ textDecoration: 'none' }}>Go to Login</a>
           </div>
+        </div>
+      )}
+      {message.text && (
+        <div className={`toast ${message.type}`}>
+          {message.text}
         </div>
       )}
       <div className="dashboard-layout">
@@ -184,53 +185,43 @@ const MemberDashboard = () => {
             <>
               <div className="dashboard-header-row">
                 <h1 className="gradient-text">Add New Event</h1>
-                <button type="button" className="publish-btn" onClick={handlePublish} disabled={loading}>
-                  {loading ? 'Publishing...' : 'Publish Event'}
-                </button>
               </div>
               
-              {message.text && (
-                <div style={{ padding: '1rem', borderRadius: '8px', background: message.type === 'error' ? 'rgba(255, 0, 0, 0.1)' : 'rgba(0, 255, 0, 0.1)', color: message.type === 'error' ? '#ff6b6b' : '#51cf66', border: `1px solid ${message.type === 'error' ? '#ff6b6b' : '#51cf66'}` }}>
-                  {message.text}
-                </div>
-              )}
-
               <form style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '500px', marginTop: '1rem' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                  <label style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Event Title</label>
-                  <input type="text" placeholder="Enter the event title..." value={title} onChange={e => setTitle(e.target.value)} style={{ padding: '1rem', borderRadius: '8px', background: 'var(--bg-color)', border: '1px solid var(--text-primary)', color: 'white', fontSize: '1rem' }} />
+                  <label className="form-label">Event Title</label>
+                  <input type="text" placeholder="Enter the event title..." value={title} onChange={e => { setTitle(e.target.value); setErrors(prev => ({...prev, title: ''})); }} className={`form-input ${errors.title ? 'error' : ''}`} />
+                  {errors.title && <span className="error-text">{errors.title}</span>}
                 </div>
                 
                 <div className="form-row">
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1 }}>
-                    <label style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Date (dd-mm-yyyy)</label>
-                    <input type="text" placeholder="dd-mm-yyyy" maxLength={10} value={eventDate} onChange={handleDateChange} style={{ padding: '1rem', borderRadius: '8px', background: 'var(--bg-color)', border: '1px solid var(--text-primary)', color: 'white', fontSize: '1rem' }} />
+                    <label className="form-label">Date</label>
+                    <input type="date" value={eventDate} onChange={e => { handleDateChange(e); setErrors(prev => ({...prev, eventDate: ''})); }} className={`form-input ${errors.eventDate ? 'error' : ''}`} />
+                    {errors.eventDate && <span className="error-text">{errors.eventDate}</span>}
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1 }}>
-                    <label style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Time</label>
-                    <input type="time" step="60" value={time} onChange={e => setTime(e.target.value)} style={{ padding: '1rem', borderRadius: '8px', background: 'var(--bg-color)', border: '1px solid var(--text-primary)', color: 'white', fontSize: '1rem' }} />
+                    <label className="form-label">Time</label>
+                    <input type="time" step="60" value={time} onChange={e => { setTime(e.target.value); setErrors(prev => ({...prev, time: ''})); }} className={`form-input ${errors.time ? 'error' : ''}`} />
+                    {errors.time && <span className="error-text">{errors.time}</span>}
                   </div>
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                  <label style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Location (Optional)</label>
-                  <input type="text" placeholder="e.g. Main Auditorium" value={location} onChange={e => setLocation(e.target.value)} style={{ padding: '1rem', borderRadius: '8px', background: 'var(--bg-color)', border: '1px solid var(--text-primary)', color: 'white', fontSize: '1rem' }} />
+                  <label className="form-label">Location (Optional)</label>
+                  <input type="text" placeholder="e.g. Main Auditorium" value={location} onChange={e => setLocation(e.target.value)} className="form-input" />
                 </div>
                 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                  <label style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Event Cover Image</label>
-                  <label className="custom-file-upload" htmlFor="file">
+                  <label className="form-label">Event Cover Image</label>
+                  <label className="custom-file-upload" htmlFor="file" style={{ padding: selectedFile ? '0' : '1.5rem', overflow: 'hidden' }}>
                   {selectedFile ? (
-                    <>
-                      <div className="icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="rgba(255, 255, 255, 0.7)" viewBox="0 0 24 24" style={{ height: '60px' }}>
-                          <path d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2ZM13 3.5L18.5 9H14C13.4477 9 13 8.55228 13 8V3.5ZM18 20H6V4H11V8C11 9.65685 12.3431 11 14 11H18V20Z" />
-                        </svg>
+                    <div style={{ width: '100%', height: '100%', position: 'relative' }}>
+                      <img src={URL.createObjectURL(selectedFile)} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0, transition: 'opacity 0.2s' }} onMouseEnter={e => e.currentTarget.style.opacity = '1'} onMouseLeave={e => e.currentTarget.style.opacity = '0'}>
+                        <span style={{ color: 'white', fontWeight: 500 }}>Change Image</span>
                       </div>
-                      <div className="text" style={{ textAlign: 'center', wordBreak: 'break-all', padding: '0 1rem' }}>
-                        <span style={{ color: 'white' }}>{selectedFile.name}</span>
-                      </div>
-                    </>
+                    </div>
                   ) : (
                     <>
                       <div className="icon">
@@ -243,7 +234,7 @@ const MemberDashboard = () => {
                         </svg>
                       </div>
                       <div className="text">
-                        <span>Click to upload image</span>
+                        <span>Click or drag image here</span>
                       </div>
                     </>
                   )}
@@ -252,9 +243,13 @@ const MemberDashboard = () => {
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                  <label style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Event Description</label>
-                  <textarea placeholder="Write something about the event..." value={description} onChange={e => setDescription(e.target.value)} style={{ padding: '1rem', borderRadius: '8px', background: 'var(--bg-color)', border: '1px solid var(--text-primary)', color: 'white', fontSize: '1rem', minHeight: '150px' }} />
+                  <label className="form-label">Event Description</label>
+                  <textarea placeholder="Write something about the event..." value={description} onChange={e => setDescription(e.target.value)} className="form-input" style={{ minHeight: '150px' }} />
                 </div>
+                
+                <button type="button" className="publish-btn primary-cta" onClick={handlePublish} disabled={loading}>
+                  {loading ? 'Publishing...' : 'Publish Event'}
+                </button>
               </form>
             </>
           )}
