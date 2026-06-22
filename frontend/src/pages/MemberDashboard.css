@@ -12,6 +12,10 @@
   padding: 0.5rem 2rem;
   margin: 1.5rem 2rem 0 2rem;
   border-radius: 100px;
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .dashboard-nav-right {
