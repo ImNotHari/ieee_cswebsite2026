@@ -38,7 +38,7 @@ const Navbar = () => {
             <img src="/ieee-logo-geci.png" alt="IEEE CS GECI" className="nav-logo-img" />
           </a>
         </div>
-        
+
         <div className="nav-links desktop-links">
           <a href="#" className="nav-btn">Home</a>
           <a href="#about" className="nav-btn">About</a>
@@ -48,11 +48,11 @@ const Navbar = () => {
           <a href="#/blog" className="nav-btn">Blog</a>
         </div>
       </div>
-      
+
       <div className="nav-right" style={{ display: 'flex', alignItems: 'center', gap: '1rem', zIndex: 1001 }}>
         <a href="#/login" className="nav-login-btn" style={{ minHeight: '44px', display: 'flex', alignItems: 'center' }}>Login</a>
-        <button 
-          className={`hamburger ${isOpen ? 'active' : ''}`} 
+        <button
+          className={`hamburger ${isOpen ? 'active' : ''}`}
           onClick={toggleMenu}
           aria-label="Toggle navigation menu"
         >
@@ -64,12 +64,12 @@ const Navbar = () => {
         </button>
       </div>
 
-      <div 
-        className={`mobile-menu-overlay ${isOpen ? 'open' : ''}`} 
+      <div
+        className={`mobile-menu-overlay ${isOpen ? 'open' : ''}`}
         onClick={closeMenu}
       >
-        <div 
-          className="mobile-menu-content" 
+        <div
+          className="mobile-menu-content"
           onClick={(e) => e.stopPropagation()}
           ref={menuRef}
           tabIndex={-1}

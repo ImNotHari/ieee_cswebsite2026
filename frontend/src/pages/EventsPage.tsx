@@ -28,7 +28,7 @@ const EventsPage = () => {
   return (
     <div className="page-container" style={{ padding: 'calc(var(--nav-height) + 4rem) 2rem 4rem 2rem', maxWidth: '1200px', margin: '0 auto' }}>
       <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-        <h1 className="gradient-text animate-fade-in-up stagger-1" style={{ fontSize: '3rem', marginBottom: '1rem' }}>Upcoming Events</h1>
+        <h1 className="gradient-text animate-fade-in-up stagger-1" style={{ fontSize: '3rem', marginBottom: '1rem' }}>Events</h1>
         <p style={{ color: 'var(--text-secondary)', fontSize: '1.2rem' }} className="animate-fade-in-up stagger-2">
           Join us for our latest workshops, talks, and community gatherings.
         </p>
@@ -40,7 +40,7 @@ const EventsPage = () => {
         </div>
       ) : events.length === 0 ? (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', marginTop: '4rem' }}>
-          <p style={{ color: 'var(--text-secondary)' }}>No upcoming events at the moment. Stay tuned!</p>
+          <p style={{ color: 'var(--text-secondary)' }}>No events at the moment. Stay tuned!</p>
           <div style={{ transform: 'scale(0.7)', marginTop: '-50px' }}>
             <AnimatedFace />
           </div>
