@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import AnimatedFace from '../components/AnimatedFace';
 import { supabase } from '../lib/supabase';
 import './MemberDashboard.css';
+import '../components/Navbar.css';
 
 const MemberDashboard = () => {
   const [activeTab, setActiveTab] = useState('add');
@@ -37,6 +38,42 @@ const MemberDashboard = () => {
   // Events List State
   const [events, setEvents] = useState<any[]>([]);
   const [loadingEvents, setLoadingEvents] = useState(false);
+  const [editingEventId, setEditingEventId] = useState<string | null>(null);
+
+  const handleEditClick = (event: any) => {
+    setTitle(event.title || '');
+    setEventDate(event.date || '');
+    setTime(event.time || '');
+    setLocation(event.location || '');
+    setDescription(event.description || '');
+    setSelectedFile(null);
+    setEditingEventId(event.id);
+    setActiveTab('edit');
+  };
+
+  const handleCancelEdit = () => {
+    setTitle('');
+    setEventDate('');
+    setTime('');
+    setLocation('');
+    setDescription('');
+    setSelectedFile(null);
+    setEditingEventId(null);
+    setActiveTab('view');
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!window.confirm('Are you sure you want to delete this event?')) return;
+    setLoadingEvents(true);
+    const { error } = await supabase.from('events').delete().eq('id', id);
+    if (error) {
+      setMessage({ text: `Failed to delete event: ${error.message}`, type: 'error' });
+    } else {
+      setMessage({ text: 'Event deleted successfully!', type: 'success' });
+      fetchEvents();
+    }
+    setLoadingEvents(false);
+  };
 
   useEffect(() => {
     if (activeTab === 'view') {
@@ -109,29 +146,56 @@ const MemberDashboard = () => {
       posterPath = uploadData.path;
     }
 
-    // Insert Event
-    const { error: insertError } = await supabase.from('events').insert({
-      title,
-      date: dbDate,
-      time,
-      location,
-      description,
-      poster_path: posterPath,
-      is_published: true // auto-publish for now
-    });
+    // Insert or Update Event
+    if (editingEventId) {
+      const updateData: any = {
+        title,
+        date: dbDate,
+        time,
+        location,
+        description,
+        is_published: true
+      };
+      if (posterPath) {
+        updateData.poster_path = posterPath;
+      }
+      
+      const { error: updateError } = await supabase
+        .from('events')
+        .update(updateData)
+        .eq('id', editingEventId);
 
-    if (insertError) {
-      setMessage({ text: `Failed to save event: ${insertError.message}`, type: 'error' });
+      if (updateError) {
+        setMessage({ text: `Failed to update event: ${updateError.message}`, type: 'error' });
+      } else {
+        setMessage({ text: 'Event updated successfully!', type: 'success' });
+        setTimeout(() => setMessage({ text: '', type: '' }), 5000);
+        handleCancelEdit();
+      }
     } else {
-      setMessage({ text: 'Event published successfully!', type: 'success' });
-      setTimeout(() => setMessage({ text: '', type: '' }), 5000);
-      // Reset form
-      setTitle('');
-      setEventDate('');
-      setTime('');
-      setLocation('');
-      setDescription('');
-      setSelectedFile(null);
+      const { error: insertError } = await supabase.from('events').insert({
+        title,
+        date: dbDate,
+        time,
+        location,
+        description,
+        poster_path: posterPath,
+        is_published: true // auto-publish for now
+      });
+
+      if (insertError) {
+        setMessage({ text: `Failed to save event: ${insertError.message}`, type: 'error' });
+      } else {
+        setMessage({ text: 'Event published successfully!', type: 'success' });
+        setTimeout(() => setMessage({ text: '', type: '' }), 5000);
+        // Reset form
+        setTitle('');
+        setEventDate('');
+        setTime('');
+        setLocation('');
+        setDescription('');
+        setSelectedFile(null);
+      }
     }
     setLoading(false);
   };
@@ -155,21 +219,25 @@ const MemberDashboard = () => {
       <div className="dashboard-layout">
         <nav className="dashboard-navbar">
         <div className="dashboard-logo" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <button onClick={() => setSidebarOpen(!sidebarOpen)} style={{ background: 'none', border: 'none', color: 'white', fontSize: '1.5rem', cursor: 'pointer' }}>☰</button>
           <img src="/ieee-logo-geci.png" alt="Logo" className="dashboard-logo-img" />
         </div>
         <div className="dashboard-nav-right" style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: '1rem' }}>
           
           {/* Desktop View */}
-          <img src="https://ui-avatars.com/api/?name=Member&background=32cbff&color=fff&rounded=true" alt="Profile" className="profile-icon desktop-only" />
+          <img src="https://ui-avatars.com/api/?name=Member&background=cc7b2f&color=fff&rounded=true" alt="Profile" className="profile-icon desktop-only" />
           <button 
-            className="logout-btn desktop-only" 
+            className="fancy-btn desktop-only" 
             onClick={async () => {
               await supabase.auth.signOut();
               window.location.hash = '';
             }}
           >
-            Logout
+            <span className="btn-text">Logout</span>
+            <span className="shine"></span>
+            <span className="border tl"></span>
+            <span className="border tr"></span>
+            <span className="border bl"></span>
+            <span className="border br"></span>
           </button>
 
           {/* Mobile View */}
@@ -207,10 +275,10 @@ const MemberDashboard = () => {
           </ul>
         </aside>
         <main className="dashboard-main glass-panel">
-          {activeTab === 'add' && (
+          {(activeTab === 'add' || (activeTab === 'edit' && editingEventId)) && (
             <>
               <div className="dashboard-header-row">
-                <h1 className="gradient-text">Add New Event</h1>
+                <h1 className="gradient-text">{activeTab === 'edit' ? 'Edit Event' : 'Add New Event'}</h1>
               </div>
               <form style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxWidth: '500px', marginTop: '1rem' }}>
                 
@@ -336,19 +404,31 @@ const MemberDashboard = () => {
                   </div>
                 </div>
                 
-                <button 
-                  type="button" 
-                  className="publish-btn primary-cta" 
-                  onClick={handlePublish} 
-                  disabled={loading || !title.trim() || !eventDate || !time}
-                  style={{ opacity: (!title.trim() || !eventDate || !time) ? 0.5 : 1, cursor: (!title.trim() || !eventDate || !time) ? 'not-allowed' : 'pointer' }}
-                >
-                  {loading ? 'Publishing...' : 'Publish Event'}
-                </button>
+                <div style={{ display: 'flex', gap: '1rem' }}>
+                  <button 
+                    type="button" 
+                    className="publish-btn primary-cta" 
+                    onClick={handlePublish} 
+                    disabled={loading || !title.trim() || !eventDate || !time}
+                    style={{ opacity: (!title.trim() || !eventDate || !time) ? 0.5 : 1, cursor: (!title.trim() || !eventDate || !time) ? 'not-allowed' : 'pointer', flex: 1 }}
+                  >
+                    {loading ? (activeTab === 'edit' ? 'Updating...' : 'Publishing...') : (activeTab === 'edit' ? 'Update Event' : 'Publish Event')}
+                  </button>
+                  {activeTab === 'edit' && (
+                    <button 
+                      type="button" 
+                      className="publish-btn" 
+                      onClick={handleCancelEdit} 
+                      style={{ marginTop: '1rem', padding: '1rem', flex: 1, background: 'rgba(255,255,255,0.1)', color: 'white', borderRadius: '8px' }}
+                    >
+                      Cancel Edit
+                    </button>
+                  )}
+                </div>
               </form>
             </>
           )}
-          {activeTab === 'edit' && (
+          {(activeTab === 'edit' && !editingEventId) && (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
               <h1 className="gradient-text" style={{ alignSelf: 'flex-start' }}>Edit Event</h1>
               <p style={{ color: 'var(--text-secondary)', alignSelf: 'flex-start' }}>Select an event from your list to start editing.</p>
@@ -408,6 +488,10 @@ const MemberDashboard = () => {
                           {event.description}
                         </p>
                       )}
+                      <div style={{ display: 'flex', gap: '0.5rem', marginTop: 'auto', paddingTop: '1rem' }}>
+                        <button className="publish-btn" onClick={() => handleEditClick(event)} style={{ flex: 1, padding: '0.5rem', fontSize: '0.9rem' }}>Edit</button>
+                        <button className="publish-btn" onClick={() => handleDelete(event.id)} style={{ flex: 1, padding: '0.5rem', fontSize: '0.9rem', background: 'rgba(255, 107, 107, 0.2)', color: '#ff6b6b' }}>Delete</button>
+                      </div>
                     </div>
                   ))}
                 </div>
