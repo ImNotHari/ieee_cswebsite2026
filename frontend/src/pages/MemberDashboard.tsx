@@ -154,7 +154,7 @@ const MemberDashboard = () => {
         <nav className="dashboard-navbar glass-panel">
         <div className="dashboard-logo" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
           <button onClick={() => setSidebarOpen(!sidebarOpen)} style={{ background: 'none', border: 'none', color: 'white', fontSize: '1.5rem', cursor: 'pointer' }}>☰</button>
-          <img src="/ieee-logo-geci.png" alt="Logo" style={{ height: '80px', objectFit: 'contain' }} />
+          <img src="/ieee-logo-geci.png" alt="Logo" className="dashboard-logo-img" />
         </div>
         <div className="dashboard-nav-right">
           <img src="https://ui-avatars.com/api/?name=Member&background=32cbff&color=fff&rounded=true" alt="Profile" className="profile-icon" />
@@ -182,7 +182,7 @@ const MemberDashboard = () => {
         <main className="dashboard-main glass-panel">
           {activeTab === 'add' && (
             <>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div className="dashboard-header-row">
                 <h1 className="gradient-text">Add New Event</h1>
                 <button type="button" className="publish-btn" onClick={handlePublish} disabled={loading}>
                   {loading ? 'Publishing...' : 'Publish Event'}
@@ -201,7 +201,7 @@ const MemberDashboard = () => {
                   <input type="text" placeholder="Enter the event title..." value={title} onChange={e => setTitle(e.target.value)} style={{ padding: '1rem', borderRadius: '8px', background: 'var(--bg-color)', border: '1px solid var(--text-primary)', color: 'white', fontSize: '1rem' }} />
                 </div>
                 
-                <div style={{ display: 'flex', gap: '1rem' }}>
+                <div className="form-row">
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1 }}>
                     <label style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Date (dd-mm-yyyy)</label>
                     <input type="text" placeholder="dd-mm-yyyy" maxLength={10} value={eventDate} onChange={handleDateChange} style={{ padding: '1rem', borderRadius: '8px', background: 'var(--bg-color)', border: '1px solid var(--text-primary)', color: 'white', fontSize: '1rem' }} />
@@ -269,7 +269,7 @@ const MemberDashboard = () => {
           )}
           {activeTab === 'view' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', width: '100%' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div className="dashboard-header-row">
                 <h1 className="gradient-text">My Events</h1>
                 <button className="publish-btn" onClick={fetchEvents} style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}>Refresh</button>
               </div>
