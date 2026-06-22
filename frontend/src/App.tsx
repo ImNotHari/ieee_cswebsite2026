@@ -5,6 +5,7 @@ import LoginPage from './pages/LoginPage';
 import MemberDashboard from './pages/MemberDashboard';
 import AnimatedFace from './components/AnimatedFace';
 import EventsPage from './pages/EventsPage';
+import GridBackground from './components/GridBackground';
 import './App.css';
 
 const App = () => {
@@ -47,6 +48,7 @@ const App = () => {
 
   return (
     <div className="app-container">
+      <GridBackground />
       {(hash !== '#/login' && hash !== '#/dashboard') && <Navbar />}
       {renderContent()}
     </div>

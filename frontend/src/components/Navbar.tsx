@@ -50,7 +50,14 @@ const Navbar = () => {
       </div>
 
       <div className="nav-right" style={{ display: 'flex', alignItems: 'center', gap: '1rem', zIndex: 1001 }}>
-        <a href="#/login" className="nav-login-btn" style={{ minHeight: '44px', display: 'flex', alignItems: 'center' }}>Login</a>
+        <a href="#/login" className="fancy-btn" style={{ textDecoration: 'none' }}>
+          <span className="btn-text">Login</span>
+          <span className="shine"></span>
+          <span className="border tl"></span>
+          <span className="border tr"></span>
+          <span className="border bl"></span>
+          <span className="border br"></span>
+        </a>
         <button
           className={`hamburger ${isOpen ? 'active' : ''}`}
           onClick={toggleMenu}
