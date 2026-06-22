@@ -215,7 +215,7 @@ const MemberDashboard = () => {
               <form style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxWidth: '500px', marginTop: '1rem' }}>
                 
                 <div className="form-section">
-                  <h3 className="section-title">Basic Info</h3>
+                  <h3 className="dashboard-section-title">Basic Info</h3>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                     <label className="form-label">Event Title <span style={{ color: '#ff6b6b' }}>*</span></label>
                     <input 
@@ -242,7 +242,7 @@ const MemberDashboard = () => {
                 </div>
                 
                 <div className="form-section">
-                  <h3 className="section-title">Schedule</h3>
+                  <h3 className="dashboard-section-title">Schedule</h3>
                   <div className="form-row">
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1 }}>
                       <label className="form-label">Date <span style={{ color: '#ff6b6b' }}>*</span></label>
@@ -293,7 +293,7 @@ const MemberDashboard = () => {
                 </div>
 
                 <div className="form-section">
-                  <h3 className="section-title">Details</h3>
+                  <h3 className="dashboard-section-title">Details</h3>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                       <label className="form-label">Location (Optional)</label>
@@ -308,7 +308,7 @@ const MemberDashboard = () => {
                 </div>
                 
                 <div className="form-section">
-                  <h3 className="section-title">Media</h3>
+                  <h3 className="dashboard-section-title">Media</h3>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                     <label className="form-label">Event Cover Image</label>
                     <label className="custom-file-upload" htmlFor="file" style={{ padding: selectedFile ? '0' : '1.5rem', overflow: 'hidden' }}>
@@ -365,16 +365,28 @@ const MemberDashboard = () => {
               </div>
               
               {loadingEvents ? (
-                <p style={{ color: 'var(--text-secondary)' }}>Loading events...</p>
+                <div className="animate-fade-in-up" style={{ position: 'relative', height: '200px', width: '100%', marginTop: '2rem' }}>
+                  <div className="banter-loader">
+                    <div className="banter-loader__box"></div>
+                    <div className="banter-loader__box"></div>
+                    <div className="banter-loader__box"></div>
+                    <div className="banter-loader__box"></div>
+                    <div className="banter-loader__box"></div>
+                    <div className="banter-loader__box"></div>
+                    <div className="banter-loader__box"></div>
+                    <div className="banter-loader__box"></div>
+                    <div className="banter-loader__box"></div>
+                  </div>
+                </div>
               ) : events.length === 0 ? (
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
+                <div className="animate-fade-in-up" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
                   <p style={{ color: 'var(--text-secondary)' }}>You haven't published any events yet.</p>
                   <div style={{ transform: 'scale(0.7)', marginTop: '-50px' }}>
                     <AnimatedFace />
                   </div>
                 </div>
               ) : (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.5rem' }}>
+                <div className="animate-fade-in-up stagger-1" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.5rem' }}>
                   {events.map(event => (
                     <div key={event.id} className="glass-panel" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem', border: '1px solid rgba(255,255,255,0.1)' }}>
                       {event.poster_path && (
