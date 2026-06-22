@@ -8,6 +8,10 @@ const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [emailTouched, setEmailTouched] = useState(false);
+
+  const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const isFormValid = email.length > 0 && password.length > 0 && isEmailValid;
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,15 +36,22 @@ const LoginPage = () => {
       <form className="form" onSubmit={handleLogin}>
         <div className="title">Welcome,<br/><span>Log in to continue</span></div>
         
-        {error && <div style={{ color: 'red', marginBottom: '1rem', fontSize: '0.9rem' }}>{error}</div>}
+        {error && <div style={{ color: '#ff6b6b', marginBottom: '1rem', fontSize: '0.9rem' }}>{error}</div>}
+        {emailTouched && email && !isEmailValid && !error && (
+          <div style={{ color: '#ff6b6b', marginBottom: '0.5rem', fontSize: '0.85rem', alignSelf: 'flex-start' }}>Please enter a valid email address</div>
+        )}
 
         <input 
-          className="input" 
+          className={`input ${emailTouched && email && !isEmailValid ? 'error' : ''}`} 
           name="email" 
-          placeholder="Email" 
+          placeholder="Email *" 
           type="email" 
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) => {
+            setEmail(e.target.value);
+            setError('');
+          }}
+          onBlur={() => setEmailTouched(true)}
           autoComplete="email"
           required
         />
@@ -48,10 +59,13 @@ const LoginPage = () => {
           <input 
             className="input" 
             name="password" 
-            placeholder="Password" 
+            placeholder="Password *" 
             type={showPassword ? 'text' : 'password'} 
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) => {
+              setPassword(e.target.value);
+              setError('');
+            }}
             autoComplete="current-password"
             required
             style={{ width: '100%', paddingRight: '2.5rem' }}
@@ -81,7 +95,12 @@ const LoginPage = () => {
           </button>
         </div>
         
-        <button type="submit" className="button-confirm" disabled={loading}>
+        <button 
+          type="submit" 
+          className="button-confirm" 
+          disabled={loading || !isFormValid}
+          style={{ opacity: (!isFormValid) ? 0.5 : 1, cursor: (!isFormValid) ? 'not-allowed' : 'pointer' }}
+        >
           {loading ? 'Logging in...' : 'Login'}
         </button>
         <button type="button" className="button-confirm button-home" onClick={() => window.location.hash = ''}>

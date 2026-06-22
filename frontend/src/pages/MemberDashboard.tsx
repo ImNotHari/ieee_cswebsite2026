@@ -217,9 +217,27 @@ const MemberDashboard = () => {
                 <div className="form-section">
                   <h3 className="section-title">Basic Info</h3>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                    <label className="form-label">Event Title</label>
-                    <input type="text" placeholder="Enter the event title..." value={title} onChange={e => { setTitle(e.target.value); setErrors(prev => ({...prev, title: ''})); }} className={`form-input ${errors.title ? 'error' : ''}`} />
-                    {errors.title && <span className="error-text">{errors.title}</span>}
+                    <label className="form-label">Event Title <span style={{ color: '#ff6b6b' }}>*</span></label>
+                    <input 
+                      type="text" 
+                      placeholder="Enter the event title..." 
+                      value={title} 
+                      onChange={e => { 
+                        setTitle(e.target.value); 
+                        if (!e.target.value.trim()) {
+                          setErrors(prev => ({...prev, title: 'Event Title is required'}));
+                        } else {
+                          setErrors(prev => ({...prev, title: ''}));
+                        }
+                      }} 
+                      onBlur={(e) => {
+                        if (!e.target.value.trim()) {
+                          setErrors(prev => ({...prev, title: 'Event Title is required'}));
+                        }
+                      }}
+                      className={`form-input ${errors.title ? 'error' : ''}`} 
+                    />
+                    {errors.title && <span className="error-text" style={{ color: '#ff6b6b', fontSize: '0.85rem' }}>{errors.title}</span>}
                   </div>
                 </div>
                 
@@ -227,14 +245,49 @@ const MemberDashboard = () => {
                   <h3 className="section-title">Schedule</h3>
                   <div className="form-row">
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1 }}>
-                      <label className="form-label">Date</label>
-                      <input type="date" value={eventDate} onChange={e => { handleDateChange(e); setErrors(prev => ({...prev, eventDate: ''})); }} className={`form-input ${errors.eventDate ? 'error' : ''}`} />
-                      {errors.eventDate && <span className="error-text">{errors.eventDate}</span>}
+                      <label className="form-label">Date <span style={{ color: '#ff6b6b' }}>*</span></label>
+                      <input 
+                        type="date" 
+                        value={eventDate} 
+                        onChange={e => { 
+                          handleDateChange(e); 
+                          if (!e.target.value) {
+                            setErrors(prev => ({...prev, eventDate: 'Date is required'}));
+                          } else {
+                            setErrors(prev => ({...prev, eventDate: ''}));
+                          }
+                        }} 
+                        onBlur={(e) => {
+                          if (!e.target.value) {
+                            setErrors(prev => ({...prev, eventDate: 'Date is required'}));
+                          }
+                        }}
+                        className={`form-input ${errors.eventDate ? 'error' : ''}`} 
+                      />
+                      {errors.eventDate && <span className="error-text" style={{ color: '#ff6b6b', fontSize: '0.85rem' }}>{errors.eventDate}</span>}
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1 }}>
-                      <label className="form-label">Time</label>
-                      <input type="time" step="60" value={time} onChange={e => { setTime(e.target.value); setErrors(prev => ({...prev, time: ''})); }} className={`form-input ${errors.time ? 'error' : ''}`} />
-                      {errors.time && <span className="error-text">{errors.time}</span>}
+                      <label className="form-label">Time <span style={{ color: '#ff6b6b' }}>*</span></label>
+                      <input 
+                        type="time" 
+                        step="60" 
+                        value={time} 
+                        onChange={e => { 
+                          setTime(e.target.value); 
+                          if (!e.target.value) {
+                            setErrors(prev => ({...prev, time: 'Time is required'}));
+                          } else {
+                            setErrors(prev => ({...prev, time: ''}));
+                          }
+                        }} 
+                        onBlur={(e) => {
+                          if (!e.target.value) {
+                            setErrors(prev => ({...prev, time: 'Time is required'}));
+                          }
+                        }}
+                        className={`form-input ${errors.time ? 'error' : ''}`} 
+                      />
+                      {errors.time && <span className="error-text" style={{ color: '#ff6b6b', fontSize: '0.85rem' }}>{errors.time}</span>}
                     </div>
                   </div>
                 </div>
@@ -283,7 +336,13 @@ const MemberDashboard = () => {
                   </div>
                 </div>
                 
-                <button type="button" className="publish-btn primary-cta" onClick={handlePublish} disabled={loading}>
+                <button 
+                  type="button" 
+                  className="publish-btn primary-cta" 
+                  onClick={handlePublish} 
+                  disabled={loading || !title.trim() || !eventDate || !time}
+                  style={{ opacity: (!title.trim() || !eventDate || !time) ? 0.5 : 1, cursor: (!title.trim() || !eventDate || !time) ? 'not-allowed' : 'pointer' }}
+                >
                   {loading ? 'Publishing...' : 'Publish Event'}
                 </button>
               </form>
