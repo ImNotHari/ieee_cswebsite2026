@@ -3,10 +3,19 @@ import './Navbar.css';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   const toggleMenu = () => setIsOpen(!isOpen);
   const closeMenu = () => setIsOpen(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -31,7 +40,7 @@ const Navbar = () => {
   }, [isOpen]);
 
   return (
-    <nav className="navbar glass-panel animate-fade-in-up">
+    <nav className={`navbar animate-fade-in-up ${isScrolled ? 'scrolled' : ''}`}>
       <div className="nav-left" style={{ display: 'flex', alignItems: 'center', gap: '3rem' }}>
         <div className="nav-logo" style={{ zIndex: 1001 }}>
           <a href="#" onClick={closeMenu} style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', minHeight: '44px', minWidth: '44px' }}>
