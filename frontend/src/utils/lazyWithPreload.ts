@@ -1,4 +1,5 @@
-import { lazy, ComponentType } from 'react';
+import { lazy } from 'react';
+import type { ComponentType } from 'react';
 
 export function lazyWithPreload<T extends ComponentType<any>>(
   factory: () => Promise<{ default: T }>

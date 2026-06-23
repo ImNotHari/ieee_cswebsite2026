@@ -7,7 +7,6 @@ import '../components/Navbar.css';
 
 const MemberDashboard = () => {
   const [activeTab, setActiveTab] = useState('add');
-  const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(true);
 
   useEffect(() => {
@@ -25,6 +24,7 @@ const MemberDashboard = () => {
   // Form State
   const [title, setTitle] = useState('');
   const [eventDate, setEventDate] = useState('');
+  const [sidebarOpen] = useState(true);
   const [time, setTime] = useState('');
   const [location, setLocation] = useState('');
   const [description, setDescription] = useState('');

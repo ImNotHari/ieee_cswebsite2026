@@ -1,7 +1,6 @@
 import { useRef, useMemo, useCallback } from 'react';
 import { List } from 'react-window';
 import ListItem from './ListItem';
-import { useResizeObserver } from '../../hooks/useResizeObserver';
 import type { DataItem } from '../../hooks/usePaginatedData';
 
 interface VirtualListProps {
@@ -41,8 +40,8 @@ const VirtualList = ({ items, hasNextPage, isNextPageLoading, loadMoreItems }: V
       <List
         rowCount={rowCount}
         rowHeight={ITEM_HEIGHT}
-        rowProps={rowProps}
-        rowComponent={ListItem}
+        rowProps={rowProps as any}
+        rowComponent={ListItem as any}
         onRowsRendered={handleRowsRendered}
         overscanCount={5}
         style={{ overflowX: 'hidden' }}

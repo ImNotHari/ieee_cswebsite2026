@@ -5,19 +5,17 @@ import type { DataItem } from '../../hooks/usePaginatedData';
 const LazyHeavySubcomponent = lazy(() => import('./HeavySubcomponent'));
 
 export interface ListItemProps {
-  ariaAttributes: {
-    "aria-posinset": number;
-    "aria-setsize": number;
-    role: "listitem";
-  };
   index: number;
   style: React.CSSProperties;
-  items: DataItem[];
-  isNextPageLoading: boolean;
-  onItemClick: (id: string) => void;
+  data: {
+    items: DataItem[];
+    isNextPageLoading: boolean;
+    onItemClick: (id: string) => void;
+  };
 }
 
-const ListItem = ({ ariaAttributes, index, style, items, isNextPageLoading, onItemClick }: ListItemProps) => {
+const ListItem = ({ index, style, data }: ListItemProps) => {
+  const { items, onItemClick } = data;
   const item = items[index];
 
   // If item doesn't exist yet, we are rendering a loading skeleton row
@@ -104,8 +102,8 @@ const areEqual = (prevProps: ListItemProps, nextProps: ListItemProps) => {
   // If the style object changed fundamentally (react-window recalculates it)
   if (prevProps.style.top !== nextProps.style.top || prevProps.style.height !== nextProps.style.height) return false;
 
-  const prevItem = prevProps.items[prevProps.index];
-  const nextItem = nextProps.items[nextProps.index];
+  const prevItem = prevProps.data.items[prevProps.index];
+  const nextItem = nextProps.data.items[nextProps.index];
 
   // If an item transitioned from undefined (loading) to defined, re-render
   if (!prevItem && nextItem) return false;
