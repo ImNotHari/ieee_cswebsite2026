@@ -10,6 +10,7 @@ import SplitText from '../components/SplitText';
 import FadeContent from '../components/FadeContent';
 
 const excecomMembers = [
+  { name: "Dr. Sarah Connor", role: "Chapter Advisor" },
   { name: "John Doe", role: "Chairperson" },
   { name: "Jane Smith", role: "Vice Chairperson" },
   { name: "Alice Johnson", role: "Secretary" },
@@ -59,12 +60,27 @@ const HomePage = () => {
         />
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3rem', marginTop: '3rem' }}>
           
-          {/* Chairperson Row */}
-          <FadeContent blur={true} duration={1000} ease="power2.out" initialOpacity={0} delay={100} style={{ transform: 'scale(1.15)', zIndex: 2 }}>
+          {/* Chapter Advisor Row */}
+          <FadeContent blur={true} duration={1000} ease="power2.out" initialOpacity={0} delay={50} style={{ transform: 'scale(1.3)', zIndex: 3, margin: '2rem 0 5rem 0' }}>
             <ProfileCard
               name={excecomMembers[0].name}
               title={excecomMembers[0].role}
               avatarUrl={`https://api.dicebear.com/7.x/notionists/svg?seed=${encodeURIComponent(excecomMembers[0].name)}&backgroundColor=transparent`}
+              showUserInfo={false}
+              enableTilt={true}
+              enableMobileTilt={false}
+              behindGlowEnabled={true}
+              innerGradient="linear-gradient(145deg, rgba(50,203,255,0.15) 0%, rgba(50,203,255,0.02) 100%)"
+              behindGlowColor="rgba(50, 203, 255, 0.7)"
+            />
+          </FadeContent>
+
+          {/* Chairperson Row */}
+          <FadeContent blur={true} duration={1000} ease="power2.out" initialOpacity={0} delay={100} style={{ transform: 'scale(1.15)', zIndex: 2, marginBottom: '3rem' }}>
+            <ProfileCard
+              name={excecomMembers[1].name}
+              title={excecomMembers[1].role}
+              avatarUrl={`https://api.dicebear.com/7.x/notionists/svg?seed=${encodeURIComponent(excecomMembers[1].name)}&backgroundColor=transparent`}
               showUserInfo={false}
               enableTilt={true}
               enableMobileTilt={false}
@@ -78,7 +94,7 @@ const HomePage = () => {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', alignItems: 'center', width: '100%' }}>
             {/* Row 2: 3 members */}
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2rem', justifyContent: 'center' }}>
-              {excecomMembers.slice(1, 4).map((person, index) => (
+              {excecomMembers.slice(2, 5).map((person, index) => (
                 <FadeContent key={index} blur={true} duration={1000} ease="power2.out" initialOpacity={0} delay={(index + 1) * 150}>
                   <ProfileCard
                     name={person.name}
@@ -95,7 +111,7 @@ const HomePage = () => {
             </div>
             {/* Row 3: 2 members */}
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2rem', justifyContent: 'center' }}>
-              {excecomMembers.slice(4).map((person, index) => (
+              {excecomMembers.slice(5).map((person, index) => (
                 <FadeContent key={index + 3} blur={true} duration={1000} ease="power2.out" initialOpacity={0} delay={(index + 1) * 150}>
                   <ProfileCard
                     name={person.name}

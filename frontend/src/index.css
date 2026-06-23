@@ -79,9 +79,9 @@
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-/* Fix logo in light mode: Invert white text to black, but use hue-rotate to restore the orange Phi */
-:root[data-theme="light"] .nav-logo-img {
-  filter: invert(1) hue-rotate(180deg);
+/* Fix logo in light mode: Only invert the text part so the Phi stays white */
+:root[data-theme="light"] .text-part {
+  filter: invert(1);
 }
 
 *, *::before, *::after {

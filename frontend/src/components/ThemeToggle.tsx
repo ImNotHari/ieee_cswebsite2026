@@ -45,7 +45,6 @@ const ThemeToggle = () => {
         onChange={toggleTheme} 
       />
       <span className="slider"></span>
-      <span className="decoration"></span>
     </label>
   );
 };

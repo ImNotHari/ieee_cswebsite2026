@@ -220,7 +220,10 @@ const MemberDashboard = () => {
       <div className="dashboard-layout">
         <nav className="dashboard-navbar">
         <div className="dashboard-logo" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <img src="/ieee-logo-geci.png" alt="Logo" className="dashboard-logo-img nav-logo-img" />
+          <div className="nav-logo-wrapper">
+            <img src="/ieee-logo-geci.png" alt="IEEE CS GECI" className="nav-logo-part circle-part" />
+            <img src="/ieee-logo-geci.png" alt="IEEE CS GECI" className="nav-logo-part text-part" />
+          </div>
         </div>
         <div className="dashboard-nav-right" style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: '1rem' }}>
           <ThemeToggle />

@@ -67,7 +67,10 @@ const Navbar = () => {
       <div className="nav-left" style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
         <div className="nav-logo" style={{ zIndex: 1001 }}>
           <Link to="/" onClick={closeMenu} style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', minHeight: '44px', minWidth: '44px' }}>
-            <img src="/ieee-logo-geci.png" alt="IEEE CS GECI" className="nav-logo-img" />
+            <div className="nav-logo-wrapper">
+              <img src="/ieee-logo-geci.png" alt="IEEE CS GECI" className="nav-logo-part circle-part" />
+              <img src="/ieee-logo-geci.png" alt="IEEE CS GECI" className="nav-logo-part text-part" />
+            </div>
           </Link>
         </div>
 

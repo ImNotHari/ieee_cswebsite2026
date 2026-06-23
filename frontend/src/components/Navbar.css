@@ -75,14 +75,33 @@
   align-items: center;
 }
 
-.nav-logo-img {
-  max-height: 85px;
+.nav-logo-wrapper {
+  position: relative;
+  display: flex;
+  height: 85px;
+  cursor: pointer;
+}
+
+.nav-logo-part {
+  height: 100%;
   width: auto;
   object-fit: contain;
   transition: transform 0.3s ease;
 }
 
-.nav-logo-img:hover {
+.circle-part {
+  /* Slice slightly after the circle, keeping the slanted divider with the text if possible */
+  clip-path: polygon(0 0, 31% 0, 31% 100%, 0 100%);
+}
+
+.text-part {
+  position: absolute;
+  top: 0;
+  left: 0;
+  clip-path: polygon(31% 0, 100% 0, 100% 100%, 31% 100%);
+}
+
+.nav-logo-wrapper:hover .nav-logo-part {
   transform: scale(1.05);
 }
 
