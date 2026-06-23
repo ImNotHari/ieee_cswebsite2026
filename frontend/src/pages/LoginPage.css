@@ -9,10 +9,10 @@
 
 .form {
   --input-focus: var(--accent-color);
-  --font-color: #fefefe;
-  --font-color-sub: #7e7e7e;
-  --bg-color: #111;
-  --main-color: #fefefe;
+  --font-color: var(--color-text-primary);
+  --font-color-sub: var(--color-text-secondary);
+  --bg-color: var(--color-bg-secondary);
+  --main-color: var(--color-text-primary);
   padding: clamp(20px, 5vw, 40px);
   background: var(--bg-color);
   display: flex;

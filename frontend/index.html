@@ -4,7 +4,36 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>frontend</title>
+    <title>IEEE CS GECI</title>
+    <script>
+      if ('%VITE_ENABLE_LIGHT_MODE%' !== 'false') {
+        (function() {
+          try {
+            const setTheme = (isLight) => {
+              if (isLight) {
+                document.documentElement.setAttribute('data-theme', 'light');
+              } else {
+                document.documentElement.removeAttribute('data-theme');
+              }
+            };
+            
+            const savedTheme = localStorage.getItem('theme');
+            const mediaQuery = window.matchMedia('(prefers-color-scheme: light)');
+            
+            // Initial setting
+            setTheme(savedTheme === 'light' || (!savedTheme && mediaQuery.matches));
+            
+            // Listen for OS changes
+            mediaQuery.addEventListener('change', (e) => {
+              if (!localStorage.getItem('theme')) {
+                setTheme(e.matches);
+                window.dispatchEvent(new CustomEvent('themeChange'));
+              }
+            });
+          } catch (e) {}
+        })();
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>

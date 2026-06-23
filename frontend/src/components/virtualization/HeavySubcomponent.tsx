@@ -14,12 +14,12 @@ const HeavySubcomponent = () => {
     <div style={{
       width: '100%',
       height: '100px', // MUST precisely match Suspense fallback height
-      background: 'var(--bg-secondary)',
+      background: 'var(--color-bg-secondary)',
       borderRadius: '8px',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      border: '1px solid rgba(255,255,255,0.1)',
+      border: '1px solid var(--color-border)',
       overflow: 'hidden'
     }}>
       <div style={{ display: 'flex', gap: '4px', height: '40px', alignItems: 'flex-end' }}>
@@ -29,7 +29,7 @@ const HeavySubcomponent = () => {
             style={{ 
               width: '4px', 
               height: `${val}%`, 
-              background: 'var(--primary-color)',
+              background: 'var(--accent-color)',
               opacity: 0.7 
             }} 
           />

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { EventsPage, LoginPage, MembershipPage, BlogPage } from '../App';
+import ThemeToggle from './ThemeToggle';
 import './Navbar.css';
 
 const Navbar = () => {
@@ -63,7 +64,7 @@ const Navbar = () => {
 
   return (
     <nav className={`navbar animate-fade-in-up ${isScrolled ? 'scrolled' : ''}`}>
-      <div className="nav-left" style={{ display: 'flex', alignItems: 'center', gap: '3rem' }}>
+      <div className="nav-left" style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
         <div className="nav-logo" style={{ zIndex: 1001 }}>
           <Link to="/" onClick={closeMenu} style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', minHeight: '44px', minWidth: '44px' }}>
             <img src="/ieee-logo-geci.png" alt="IEEE CS GECI" className="nav-logo-img" />
@@ -81,7 +82,8 @@ const Navbar = () => {
         </div>
       </div>
 
-      <div className="nav-right" style={{ display: 'flex', alignItems: 'center', gap: '1rem', zIndex: 1001 }}>
+      <div className="nav-right" style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', zIndex: 1001 }}>
+        <ThemeToggle />
         <Link to="/login" className="fancy-btn" style={{ textDecoration: 'none' }} {...getPrefetchHandlers(LoginPage)}>
           <span className="btn-text">Login</span>
           <span className="shine"></span>

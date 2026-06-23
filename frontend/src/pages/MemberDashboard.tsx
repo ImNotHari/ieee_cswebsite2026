@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import AnimatedFace from '../components/AnimatedFace';
+import ThemeToggle from '../components/ThemeToggle';
 import { supabase } from '../lib/supabase';
 import './MemberDashboard.css';
 import '../components/Navbar.css';
@@ -219,9 +220,10 @@ const MemberDashboard = () => {
       <div className="dashboard-layout">
         <nav className="dashboard-navbar">
         <div className="dashboard-logo" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <img src="/ieee-logo-geci.png" alt="Logo" className="dashboard-logo-img" />
+          <img src="/ieee-logo-geci.png" alt="Logo" className="dashboard-logo-img nav-logo-img" />
         </div>
         <div className="dashboard-nav-right" style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <ThemeToggle />
           
           {/* Desktop View */}
           <img src="https://ui-avatars.com/api/?name=Member&background=cc7b2f&color=fff&rounded=true" alt="Profile" className="profile-icon desktop-only" />

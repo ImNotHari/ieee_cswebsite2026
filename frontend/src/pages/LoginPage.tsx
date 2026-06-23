@@ -36,9 +36,9 @@ const LoginPage = () => {
       <form className="form" onSubmit={handleLogin}>
         <div className="title">Welcome,<br/><span>Log in to continue</span></div>
         
-        {error && <div style={{ color: '#ff6b6b', marginBottom: '1rem', fontSize: '0.9rem' }}>{error}</div>}
+        {error && <div style={{ color: 'var(--color-error)', marginBottom: '1rem', fontSize: '0.9rem' }}>{error}</div>}
         {emailTouched && email && !isEmailValid && !error && (
-          <div style={{ color: '#ff6b6b', marginBottom: '0.5rem', fontSize: '0.85rem', alignSelf: 'flex-start' }}>Please enter a valid email address</div>
+          <div style={{ color: 'var(--color-error)', marginBottom: '0.5rem', fontSize: '0.85rem', alignSelf: 'flex-start' }}>Please enter a valid email address</div>
         )}
 
         <input 

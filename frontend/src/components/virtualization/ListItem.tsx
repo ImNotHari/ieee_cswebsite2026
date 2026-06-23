@@ -30,12 +30,12 @@ const ListItem = ({ ariaAttributes, index, style, items, isNextPageLoading, onIt
           display: 'flex',
           alignItems: 'center',
           gap: '16px',
-          borderBottom: '1px solid rgba(255,255,255,0.05)',
+          borderBottom: '1px solid var(--color-border)',
         }}>
-          <div style={{ width: '80px', height: '80px', borderRadius: '8px', background: 'rgba(255,255,255,0.05)' }} className="pulse-skeleton" />
+          <div style={{ width: '80px', height: '80px', borderRadius: '8px', background: 'var(--color-bg-hover)' }} className="pulse-skeleton" />
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <div style={{ height: '24px', width: '60%', background: 'rgba(255,255,255,0.05)', borderRadius: '4px' }} className="pulse-skeleton" />
-            <div style={{ height: '16px', width: '80%', background: 'rgba(255,255,255,0.05)', borderRadius: '4px' }} className="pulse-skeleton" />
+            <div style={{ height: '24px', width: '60%', background: 'var(--color-bg-hover)', borderRadius: '4px' }} className="pulse-skeleton" />
+            <div style={{ height: '16px', width: '80%', background: 'var(--color-bg-hover)', borderRadius: '4px' }} className="pulse-skeleton" />
           </div>
         </div>
       </div>
@@ -53,12 +53,12 @@ const ListItem = ({ ariaAttributes, index, style, items, isNextPageLoading, onIt
           height: '100%',
           display: 'flex',
           gap: '24px',
-          borderBottom: '1px solid rgba(255,255,255,0.05)',
+          borderBottom: '1px solid var(--color-border)',
           cursor: 'pointer',
           transition: 'background 0.2s ease',
           boxSizing: 'border-box'
         }}
-        onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.02)')}
+        onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--color-bg-hover)')}
         onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
       >
         {/* Native Lazy Loaded Image */}
@@ -70,10 +70,10 @@ const ListItem = ({ ariaAttributes, index, style, items, isNextPageLoading, onIt
         />
         
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          <h3 style={{ margin: 0, fontSize: '1.2rem', color: 'var(--text-primary)' }}>
+          <h3 style={{ margin: 0, fontSize: '1.2rem', color: 'var(--color-text-primary)' }}>
             {item.title}
           </h3>
-          <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: '0.95rem' }}>
+          <p style={{ margin: 0, color: 'var(--color-text-secondary)', fontSize: '0.95rem' }}>
             {item.description}
           </p>
         </div>
@@ -85,7 +85,7 @@ const ListItem = ({ ariaAttributes, index, style, items, isNextPageLoading, onIt
             If we use fallback={null}, it triggers CLS and breaks virtualization.
           */}
           <Suspense fallback={
-            <div style={{ width: '100%', height: '100px', background: 'rgba(255,255,255,0.02)', borderRadius: '8px' }} className="pulse-skeleton" />
+            <div style={{ width: '100%', height: '100px', background: 'var(--color-bg-hover)', borderRadius: '8px' }} className="pulse-skeleton" />
           }>
             <LazyHeavySubcomponent />
           </Suspense>

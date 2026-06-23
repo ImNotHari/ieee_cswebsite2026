@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { getCanvasColors } from '../utils/themeSync';
 
 const GridBackground = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -16,9 +17,19 @@ const GridBackground = () => {
       fadeDuration: { min: 150, max: 300 },
       holdDuration: { min: 20, max: 60 },
       cellAlpha: 0.35,
-      gridColor: 'rgba(140, 140, 140, 0.15)',
-      cellColor: '204, 123, 47',
+      gridColor: 'rgba(140, 140, 140, 0.15)', // Default, overwritten immediately
+      cellColor: '204, 123, 47', // Default, overwritten immediately
     };
+    
+    // Sync colors based on initial theme mount
+    const updateColors = () => {
+      const currentTheme = document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+      const colors = getCanvasColors(currentTheme);
+      CONFIG.cellColor = colors.cellRGB;
+      CONFIG.gridColor = colors.gridColor;
+    };
+    updateColors();
+    window.addEventListener('themeChange', updateColors);
 
     let W = 0;
     let H = 0;
@@ -152,6 +163,7 @@ const GridBackground = () => {
 
     return () => {
       window.removeEventListener('resize', resize);
+      window.removeEventListener('themeChange', updateColors);
       cancelAnimationFrame(animationFrameId);
     };
   }, []);
@@ -167,7 +179,7 @@ const GridBackground = () => {
         height: '100%',
         zIndex: -1,
         pointerEvents: 'none',
-        backgroundColor: '#000000',
+        backgroundColor: 'transparent',
       }}
     />
   );
