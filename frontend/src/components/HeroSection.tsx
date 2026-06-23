@@ -2,6 +2,7 @@ import './HeroSection.css';
 import AnimatedFace from './AnimatedFace';
 // @ts-ignore
 import SplitText from './SplitText';
+import ErrorBoundary from './ErrorBoundary';
 
 const HeroSection = () => {
   return (
@@ -34,7 +35,9 @@ const HeroSection = () => {
           duration={1}
           splitType="words, chars"
         />
-        <AnimatedFace />
+        <ErrorBoundary>
+          <AnimatedFace />
+        </ErrorBoundary>
       </div>
     </div>
   );
