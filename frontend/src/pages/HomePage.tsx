@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import HeroSection from '../components/HeroSection';
 import AboutSection from '../components/AboutSection';
 import AnimatedFace from '../components/AnimatedFace';
@@ -21,6 +22,20 @@ const excecomMembers = [
 ];
 
 const HomePage = () => {
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.state && typeof location.state === 'object' && 'scrollTo' in location.state) {
+      const id = (location.state as any).scrollTo;
+      const el = document.getElementById(id);
+      if (el) {
+        setTimeout(() => el.scrollIntoView({ behavior: 'smooth' }), 50);
+        // Clear the state so it doesn't trigger again on reload
+        window.history.replaceState({}, document.title);
+      }
+    }
+  }, [location.state]);
+
   useEffect(() => {
     const hash = window.location.hash;
     if (hash && hash !== '#' && !hash.startsWith('#/')) {

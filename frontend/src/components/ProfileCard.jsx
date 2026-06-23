@@ -230,6 +230,9 @@ const ProfileCardComponent = ({
   );
 
   useEffect(() => {
+    let isMounted = true;
+    let hasListener = false;
+
     if (!enableTilt || !tiltEngine) return;
 
     const shell = shellRef.current;
@@ -251,13 +254,17 @@ const ProfileCardComponent = ({
         anyMotion
           .requestPermission()
           .then(state => {
-            if (state === 'granted') {
+            if (state === 'granted' && isMounted && !hasListener) {
               window.addEventListener('deviceorientation', deviceOrientationHandler);
+              hasListener = true;
             }
           })
           .catch(console.error);
       } else {
-        window.addEventListener('deviceorientation', deviceOrientationHandler);
+        if (isMounted && !hasListener) {
+          window.addEventListener('deviceorientation', deviceOrientationHandler);
+          hasListener = true;
+        }
       }
     };
     shell.addEventListener('click', handleClick);
@@ -269,11 +276,14 @@ const ProfileCardComponent = ({
     tiltEngine.beginInitial(ANIMATION_CONFIG.INITIAL_DURATION);
 
     return () => {
+      isMounted = false;
       shell.removeEventListener('pointerenter', pointerEnterHandler);
       shell.removeEventListener('pointermove', pointerMoveHandler);
       shell.removeEventListener('pointerleave', pointerLeaveHandler);
       shell.removeEventListener('click', handleClick);
-      window.removeEventListener('deviceorientation', deviceOrientationHandler);
+      if (hasListener) {
+        window.removeEventListener('deviceorientation', deviceOrientationHandler);
+      }
       if (enterTimerRef.current) window.clearTimeout(enterTimerRef.current);
       if (leaveRafRef.current) cancelAnimationFrame(leaveRafRef.current);
       tiltEngine.cancel();

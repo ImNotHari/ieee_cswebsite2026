@@ -33,6 +33,27 @@ const MemberDashboard = () => {
   // UI State
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ text: '', type: '' });
+  const isMounted = useRef(true);
+
+  useEffect(() => {
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!message.text) return;
+    const id = setTimeout(() => {
+      if (isMounted.current) {
+        setMessage({ text: '', type: '' });
+      }
+    }, 5000);
+    return () => clearTimeout(id);
+  }, [message.text]);
+
+  const safeSetState = useCallback((fn: () => void) => {
+    if (isMounted.current) fn();
+  }, []);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   
@@ -113,7 +134,6 @@ const MemberDashboard = () => {
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       setMessage({ text: 'Please fill in all required fields.', type: 'error' });
-      setTimeout(() => setMessage({ text: '', type: '' }), 5000);
       return;
     }
     setErrors({});
@@ -140,8 +160,10 @@ const MemberDashboard = () => {
         .upload(fileName, selectedFile);
 
       if (uploadError) {
-        setMessage({ text: `Image upload failed: ${uploadError.message}`, type: 'error' });
-        setLoading(false);
+        safeSetState(() => {
+          setMessage({ text: `Image upload failed: ${uploadError.message}`, type: 'error' });
+          setLoading(false);
+        });
         return;
       }
       posterPath = uploadData.path;
@@ -167,11 +189,16 @@ const MemberDashboard = () => {
         .eq('id', editingEventId);
 
       if (updateError) {
-        setMessage({ text: `Failed to update event: ${updateError.message}`, type: 'error' });
+        safeSetState(() => {
+          setMessage({ text: `Failed to update event: ${updateError.message}`, type: 'error' });
+          setLoading(false);
+        });
       } else {
-        setMessage({ text: 'Event updated successfully!', type: 'success' });
-        setTimeout(() => setMessage({ text: '', type: '' }), 5000);
-        handleCancelEdit();
+        safeSetState(() => {
+          setMessage({ text: 'Event updated successfully!', type: 'success' });
+          setLoading(false);
+          handleCancelEdit();
+        });
       }
     } else {
       const { error: insertError } = await supabase.from('events').insert({
@@ -185,17 +212,22 @@ const MemberDashboard = () => {
       });
 
       if (insertError) {
-        setMessage({ text: `Failed to save event: ${insertError.message}`, type: 'error' });
+        safeSetState(() => {
+          setMessage({ text: `Failed to save event: ${insertError.message}`, type: 'error' });
+          setLoading(false);
+        });
       } else {
-        setMessage({ text: 'Event published successfully!', type: 'success' });
-        setTimeout(() => setMessage({ text: '', type: '' }), 5000);
-        // Reset form
-        setTitle('');
-        setEventDate('');
-        setTime('');
-        setLocation('');
-        setDescription('');
-        setSelectedFile(null);
+        safeSetState(() => {
+          setMessage({ text: 'Event published successfully!', type: 'success' });
+          setLoading(false);
+          // Reset form
+          setTitle('');
+          setEventDate('');
+          setTime('');
+          setLocation('');
+          setDescription('');
+          setSelectedFile(null);
+        });
       }
     }
     setLoading(false);

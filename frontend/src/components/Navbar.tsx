@@ -47,10 +47,7 @@ const Navbar = () => {
   const scrollToSection = (id: string) => {
     closeMenu();
     if (location.pathname !== '/') {
-      navigate('/');
-      setTimeout(() => {
-        document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
-      }, 100);
+      navigate('/', { state: { scrollTo: id } });
     } else {
       document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
     }
