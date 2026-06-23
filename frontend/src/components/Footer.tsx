@@ -1,3 +1,4 @@
+// @ts-ignore
 import FadeContent from './FadeContent';
 import './Footer.css';
 

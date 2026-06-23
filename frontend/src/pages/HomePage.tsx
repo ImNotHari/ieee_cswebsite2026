@@ -6,6 +6,7 @@ import AnimatedFace from '../components/AnimatedFace';
 import ProfileCard from '../components/ProfileCard';
 // @ts-ignore
 import SplitText from '../components/SplitText';
+// @ts-ignore
 import FadeContent from '../components/FadeContent';
 import Footer from '../components/Footer';
 
