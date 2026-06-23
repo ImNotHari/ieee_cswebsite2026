@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { EventsPage, LoginPage, MembershipPage, BlogPage } from '../App';
+import { EventsPage, LoginPage, MembershipPage, GalleryPage } from '../App';
 import ThemeToggle from './ThemeToggle';
 import './Navbar.css';
 
@@ -80,7 +80,7 @@ const Navbar = () => {
           <button className="nav-btn" onClick={() => scrollToSection('achievements')}>Achievements</button>
           <button className="nav-btn" onClick={() => scrollToSection('excecom')}>Excecom</button>
           <Link to="/events" className="nav-btn" {...getPrefetchHandlers(EventsPage)}>Events</Link>
-          <Link to="/blog" className="nav-btn" {...getPrefetchHandlers(BlogPage)}>Blog</Link>
+          <Link to="/gallery" className="nav-btn" {...getPrefetchHandlers(GalleryPage)}>Gallery</Link>
           <Link to="/membership" className="nav-btn" {...getPrefetchHandlers(MembershipPage)}>Membership</Link>
         </div>
       </div>
@@ -95,17 +95,17 @@ const Navbar = () => {
           <span className="border bl"></span>
           <span className="border br"></span>
         </Link>
-        <button
-          className={`hamburger ${isOpen ? 'active' : ''}`}
-          onClick={toggleMenu}
-          aria-label="Toggle navigation menu"
-        >
-          <div className="hamburger-box">
-            <span className="bar"></span>
-            <span className="bar"></span>
-            <span className="bar"></span>
-          </div>
-        </button>
+        <label className="burger">
+          <input 
+            type="checkbox" 
+            checked={isOpen} 
+            onChange={toggleMenu} 
+            aria-label="Toggle navigation menu"
+          />
+          <span></span>
+          <span></span>
+          <span></span>
+        </label>
       </div>
 
       <div
@@ -123,7 +123,7 @@ const Navbar = () => {
           <button className="nav-btn" onClick={() => scrollToSection('achievements')} style={{ textAlign: 'left', background: 'none', border: 'none', color: 'inherit', font: 'inherit', cursor: 'pointer', padding: '1rem', width: '100%' }}>Achievements</button>
           <button className="nav-btn" onClick={() => scrollToSection('excecom')} style={{ textAlign: 'left', background: 'none', border: 'none', color: 'inherit', font: 'inherit', cursor: 'pointer', padding: '1rem', width: '100%' }}>Excecom</button>
           <Link to="/events" className="nav-btn" onClick={closeMenu} {...getPrefetchHandlers(EventsPage)}>Events</Link>
-          <Link to="/blog" className="nav-btn" onClick={closeMenu} {...getPrefetchHandlers(BlogPage)}>Blog</Link>
+          <Link to="/gallery" className="nav-btn" onClick={closeMenu} {...getPrefetchHandlers(GalleryPage)}>Gallery</Link>
           <Link to="/membership" className="nav-btn" onClick={closeMenu} {...getPrefetchHandlers(MembershipPage)}>Membership</Link>
           <Link to="/login" className="nav-btn" onClick={closeMenu} {...getPrefetchHandlers(LoginPage)}>Login</Link>
         </div>

@@ -13,7 +13,7 @@ export const LoginPage = lazyWithPreload(() => import('./pages/LoginPage'));
 export const MemberDashboard = lazyWithPreload(() => import('./pages/MemberDashboard'));
 export const EventsPage = lazyWithPreload(() => import('./pages/EventsPage'));
 export const MembershipPage = lazyWithPreload(() => import('./pages/MembershipPage'));
-export const BlogPage = lazyWithPreload(() => import('./pages/BlogPage'));
+export const GalleryPage = lazyWithPreload(() => import('./pages/GalleryPage'));
 
 const App = () => {
   return (
@@ -27,7 +27,7 @@ const App = () => {
                 <Route path="/" element={<HomePage />} />
                 <Route path="/events" element={<EventsPage />} />
                 <Route path="/membership" element={<MembershipPage />} />
-                <Route path="/blog" element={<BlogPage />} />
+                <Route path="/gallery" element={<GalleryPage />} />
               </Route>
               
               {/* Auth Layout routes without Navbar */}
