@@ -55,6 +55,7 @@ const Navbar = () => {
           <a href="#excecom" className="nav-btn">Excecom</a>
           <a href="#/events" className="nav-btn">Events</a>
           <a href="#/blog" className="nav-btn">Blog</a>
+          <a href="#/membership" className="nav-btn">Membership</a>
         </div>
       </div>
 
@@ -96,6 +97,7 @@ const Navbar = () => {
           <a href="#excecom" className="nav-btn" onClick={closeMenu}>Excecom</a>
           <a href="#/events" className="nav-btn" onClick={closeMenu}>Events</a>
           <a href="#/blog" className="nav-btn" onClick={closeMenu}>Blog</a>
+          <a href="#/membership" className="nav-btn" onClick={closeMenu}>Membership</a>
           <a href="#/login" className="nav-btn" onClick={closeMenu}>Login</a>
         </div>
       </div>

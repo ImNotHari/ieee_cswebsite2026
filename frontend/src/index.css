@@ -103,6 +103,10 @@ body {
   background-clip: text;
 }
 
+.accent-text {
+  color: var(--accent-color);
+}
+
 /* Section Title */
 .section-title {
   font-size: clamp(2rem, 5vw, 3rem);

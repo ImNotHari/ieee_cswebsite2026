@@ -5,6 +5,7 @@ import LoginPage from './pages/LoginPage';
 import MemberDashboard from './pages/MemberDashboard';
 import AnimatedFace from './components/AnimatedFace';
 import EventsPage from './pages/EventsPage';
+import MembershipPage from './pages/MembershipPage';
 import GridBackground from './components/GridBackground';
 import './App.css';
 
@@ -26,6 +27,9 @@ const App = () => {
     }
     if (hash === '#/events') {
       return <EventsPage />;
+    }
+    if (hash === '#/membership') {
+      return <MembershipPage />;
     }
     if (hash === '#/blog') {
       return (

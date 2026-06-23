@@ -1,7 +1,7 @@
 .hero-container {
   display: flex;
   flex-direction: row;
-  align-items: center;
+  align-items: stretch;
   gap: 4rem;
 }
 
@@ -50,7 +50,7 @@
 
 .hero-right {
   flex: 1;
-  height: 600px;
+  min-height: 600px;
   display: flex;
   flex-direction: column;
   padding: 2.5rem;

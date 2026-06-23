@@ -1,9 +1,19 @@
 import './AboutSection.css';
 
+// @ts-ignore
+import SplitText from './SplitText';
+
 const AboutSection = () => {
   return (
     <div className="about-container section-container">
-      <h2 className="section-title gradient-text animate-fade-in-up stagger-1">About IEEE CS GECI</h2>
+      <SplitText 
+        text="About IEEE CS GECI" 
+        tag="h2" 
+        className="section-title accent-text animate-fade-in-up stagger-1"
+        delay={50}
+        duration={1}
+        splitType="words, chars"
+      />
       <div className="about-content glass-panel animate-fade-in-up stagger-2">
         <div className="about-text">
           <p>
