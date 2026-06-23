@@ -112,7 +112,7 @@
   padding: 10px 20px;
   font-size: 15px;
   text-transform: uppercase;
-  color: var(--text-primary);
+  color: var(--color-text-primary);
   background: transparent;
   border: none;
   border-radius: 8px;
@@ -234,7 +234,7 @@
 .hamburger .bar {
   width: 100%;
   height: 3px;
-  background-color: var(--text-primary);
+  background-color: var(--color-text-primary);
   border-radius: 3px;
   transition: all 0.3s ease;
 }
