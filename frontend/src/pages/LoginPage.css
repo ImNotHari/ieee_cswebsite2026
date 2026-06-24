@@ -11,20 +11,18 @@
   --input-focus: var(--accent-color);
   --font-color: var(--color-text-primary);
   --font-color-sub: var(--color-text-secondary);
-  --bg-color: var(--glass-bg-card);
-  --main-color: var(--color-border-strong);
+  --bg-color: var(--color-bg-secondary);
+  --main-color: var(--accent-color);
   padding: clamp(20px, 5vw, 40px);
   background: var(--bg-color);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   justify-content: center;
   gap: 20px;
-  border-radius: 16px;
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--shadow-lg);
+  border-radius: 5px;
+  border: 2px solid var(--main-color);
+  box-shadow: 4px 4px var(--main-color);
   font-family: inherit;
   width: 100%;
   max-width: 400px;
@@ -46,18 +44,18 @@
 
 .input {
   width: 100%;
-  height: 48px; /* Touch target minimum */
-  border-radius: 8px;
-  border: 1px solid var(--main-color);
-  background: var(--color-bg-primary);
+  height: 44px; /* Touch target minimum */
+  border-radius: 5px;
+  border: 2px solid var(--main-color);
+  background-color: var(--bg-color);
+  box-shadow: 4px 4px var(--main-color);
   font-size: 15px;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--font-color);
-  padding: 5px 16px;
+  padding: 5px 10px;
   outline: none;
   font-family: inherit;
   box-sizing: border-box;
-  transition: all 0.2s ease;
 }
 
 .input::placeholder {
@@ -66,8 +64,7 @@
 }
 
 .input:focus {
-  border: 1px solid var(--input-focus);
-  box-shadow: 0 0 0 2px rgba(204, 123, 47, 0.2);
+  border: 2px solid var(--input-focus);
 }
 
 .login-with {
@@ -98,21 +95,16 @@
 .button-confirm {
   margin: 20px auto 0 auto;
   min-width: 120px;
-  width: 100%;
+  width: auto;
   padding: 0 20px;
-  height: 48px;
-  border-radius: 8px;
-  border: none;
-  background: var(--accent-gradient);
-  box-shadow: var(--shadow-sm);
+  height: 40px;
+  border-radius: 5px;
+  border: 2px solid var(--main-color);
+  background-color: var(--bg-color);
+  box-shadow: 4px 4px var(--main-color);
   font-size: 17px;
   font-weight: 600;
-  color: #fff;
+  color: var(--font-color);
   cursor: pointer;
   font-family: inherit;
-  transition: filter 0.2s;
-}
-
-.button-confirm:hover {
-  filter: brightness(1.1);
 }
