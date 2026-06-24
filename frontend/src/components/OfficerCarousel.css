@@ -307,4 +307,5 @@
   .card.pos-right2 { left: calc(50% + 220px); opacity: 0; pointer-events: none; }
   .card.pos-left3  { opacity: 0; pointer-events: none; }
   .card.pos-right3 { opacity: 0; pointer-events: none; }
+  .carousel-nav-btn { display: none; }
 }

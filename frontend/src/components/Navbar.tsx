@@ -116,9 +116,9 @@ const Navbar = () => {
           tabIndex={-1}
         >
           <Link to="/" className="nav-btn" onClick={closeMenu}>Home</Link>
-          <button className="nav-btn" onClick={() => scrollToSection('about')} style={{ textAlign: 'left', background: 'none', border: 'none', color: 'inherit', font: 'inherit', cursor: 'pointer', padding: '1rem', width: '100%' }}>About</button>
-          <button className="nav-btn" onClick={() => scrollToSection('achievements')} style={{ textAlign: 'left', background: 'none', border: 'none', color: 'inherit', font: 'inherit', cursor: 'pointer', padding: '1rem', width: '100%' }}>Achievements</button>
-          <button className="nav-btn" onClick={() => scrollToSection('excecom')} style={{ textAlign: 'left', background: 'none', border: 'none', color: 'inherit', font: 'inherit', cursor: 'pointer', padding: '1rem', width: '100%' }}>Excecom</button>
+          <button className="nav-btn" onClick={() => scrollToSection('about')}>About</button>
+          <button className="nav-btn" onClick={() => scrollToSection('achievements')}>Achievements</button>
+          <button className="nav-btn" onClick={() => scrollToSection('excecom')}>Excecom</button>
           <Link to="/events" className="nav-btn" onClick={closeMenu} {...getPrefetchHandlers(EventsPage)}>Events</Link>
           <Link to="/gallery" className="nav-btn" onClick={closeMenu} {...getPrefetchHandlers(GalleryPage)}>Gallery</Link>
           <Link to="/membership" className="nav-btn" onClick={closeMenu} {...getPrefetchHandlers(MembershipPage)}>Membership</Link>
