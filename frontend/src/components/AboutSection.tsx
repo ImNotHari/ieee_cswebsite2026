@@ -2,6 +2,7 @@ import './AboutSection.css';
 
 // @ts-ignore
 import SplitText from './SplitText';
+import CountUpNumber from './CountUpNumber';
 
 const AboutSection = () => {
   return (
@@ -29,15 +30,15 @@ const AboutSection = () => {
           </p>
           <div className="stats-grid">
             <div className="stat-item">
-              <span className="stat-number gradient-text">50+</span>
+              <CountUpNumber end={50} suffix="+" className="stat-number gradient-text" />
               <span className="stat-label">Events Hosted</span>
             </div>
             <div className="stat-item">
-              <span className="stat-number gradient-text">2000+</span>
+              <CountUpNumber end={2000} suffix="+" className="stat-number gradient-text" />
               <span className="stat-label">Active Members</span>
             </div>
             <div className="stat-item">
-              <span className="stat-number gradient-text">15+</span>
+              <CountUpNumber end={15} suffix="+" className="stat-number gradient-text" />
               <span className="stat-label">Industry Partners</span>
             </div>
           </div>

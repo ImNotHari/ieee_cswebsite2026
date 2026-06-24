@@ -1,11 +1,10 @@
-// @ts-ignore
-import FadeContent from './FadeContent';
+
 import './Footer.css';
 
 const Footer = () => {
   return (
     <footer className="footer-container">
-      <FadeContent blur={true} duration={1000} ease="power2.out" initialOpacity={0} delay={200}>
+
         <div className="footer-content">
           {/* Column 1: Logo & Text */}
           <div className="footer-col-1">
@@ -61,7 +60,7 @@ const Footer = () => {
         <div className="footer-bottom">
           <p>&copy; {new Date().getFullYear()} IEEE CS SBC GECI. All rights reserved.</p>
         </div>
-      </FadeContent>
+
     </footer>
   );
 };
