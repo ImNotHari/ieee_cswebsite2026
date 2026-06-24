@@ -122,7 +122,7 @@ const Navbar = () => {
           <Link to="/events" className="nav-btn" onClick={closeMenu} {...getPrefetchHandlers(EventsPage)}>Events</Link>
           <Link to="/gallery" className="nav-btn" onClick={closeMenu} {...getPrefetchHandlers(GalleryPage)}>Gallery</Link>
           <Link to="/membership" className="nav-btn" onClick={closeMenu} {...getPrefetchHandlers(MembershipPage)}>Membership</Link>
-          <Link to="/login" className="nav-btn" onClick={closeMenu} {...getPrefetchHandlers(LoginPage)}>Login</Link>
+          <Link to="/login" className="nav-btn mobile-login-btn" onClick={closeMenu} {...getPrefetchHandlers(LoginPage)}>Login</Link>
         </div>
       </div>
     </nav>

@@ -337,4 +337,17 @@
   .nav-right .fancy-btn {
     display: none;
   }
+  
+  .mobile-menu-content .mobile-login-btn {
+    background: var(--accent-gradient);
+    color: #fff;
+    border: none;
+    text-align: center;
+    margin-top: 1rem;
+    box-shadow: var(--shadow-sm);
+  }
+  
+  .mobile-menu-content .mobile-login-btn::after {
+    display: none; /* remove hover circle effect for solid button */
+  }
 }
