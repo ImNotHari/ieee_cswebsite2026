@@ -281,6 +281,9 @@
 }
 
 @media (max-width: 768px) {
+  .carousel-wrapper, .carousel-track {
+    height: 520px;
+  }
   .card.big { width: 340px; height: 460px; }
   .card.big .card-image {
      width: 100%;
@@ -301,8 +304,8 @@
   .card.big .card-name { text-align: center; }
   .card.big .position-tag { text-align: center; }
   .card.small { width: 120px; height: 180px; }
-  .card.pos-left1  { left: calc(50% - 150px); }
-  .card.pos-right1 { left: calc(50% + 150px); }
+  .card.pos-left1  { left: calc(50% - 150px); opacity: 0; pointer-events: none; }
+  .card.pos-right1 { left: calc(50% + 150px); opacity: 0; pointer-events: none; }
   .card.pos-left2  { left: calc(50% - 220px); opacity: 0; pointer-events: none; }
   .card.pos-right2 { left: calc(50% + 220px); opacity: 0; pointer-events: none; }
   .card.pos-left3  { opacity: 0; pointer-events: none; }
