@@ -13,29 +13,28 @@ const HomePage = () => {
   const location = useLocation();
 
   useEffect(() => {
+    let timerId: number;
     if (location.state && typeof location.state === 'object' && 'scrollTo' in location.state) {
       const id = (location.state as any).scrollTo;
       const el = document.getElementById(id);
       if (el) {
-        setTimeout(() => el.scrollIntoView({ behavior: 'smooth' }), 50);
+        timerId = setTimeout(() => el.scrollIntoView({ behavior: 'smooth' }), 50);
         // Clear the state so it doesn't trigger again on reload
         window.history.replaceState({}, document.title);
       }
     }
+    return () => clearTimeout(timerId);
   }, [location.state]);
 
   useEffect(() => {
-    const hash = window.location.hash;
+    const hash = location.hash;
     if (hash && hash !== '#' && !hash.startsWith('#/')) {
-      // The hash corresponds to an ID like #about or #excecom
-      setTimeout(() => {
-        const element = document.querySelector(hash);
-        if (element) {
-          element.scrollIntoView({ behavior: 'smooth' });
-        }
-      }, 100); // Small delay to ensure the DOM has fully rendered the sections
+      const timerId = setTimeout(() => {
+        document.querySelector(hash)?.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+      return () => clearTimeout(timerId);
     }
-  }, [window.location.hash]);
+  }, [location.hash]);
 
   return (
     <div className="home-container">

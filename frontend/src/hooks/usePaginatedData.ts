@@ -34,7 +34,7 @@ const mockFetchPage = async (pageIndex: number, signal: AbortSignal): Promise<Da
       resolve(items);
     }, 400); // Simulate network latency
     
-    signal.addEventListener('abort', () => clearTimeout(timeoutId));
+    signal.addEventListener('abort', () => clearTimeout(timeoutId), { once: true });
   });
 };
 

@@ -13,6 +13,9 @@ const CountUpNumber: React.FC<CountUpNumberProps> = ({ end, duration = 2000, suf
   const [hasAnimated, setHasAnimated] = useState(false);
 
   useEffect(() => {
+    const node = nodeRef.current;
+    if (!node) return;
+
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting && !hasAnimated) {
@@ -22,20 +25,17 @@ const CountUpNumber: React.FC<CountUpNumberProps> = ({ end, duration = 2000, suf
       { threshold: 0.1 }
     );
 
-    if (nodeRef.current) {
-      observer.observe(nodeRef.current);
-    }
+    observer.observe(node);
 
     return () => {
-      if (nodeRef.current) {
-        observer.unobserve(nodeRef.current);
-      }
+      observer.unobserve(node);
     };
   }, [hasAnimated]);
 
   useEffect(() => {
     if (!hasAnimated) return;
 
+    let rafId: number;
     let startTimestamp: number | null = null;
     const step = (timestamp: number) => {
       if (!startTimestamp) startTimestamp = timestamp;
@@ -47,13 +47,14 @@ const CountUpNumber: React.FC<CountUpNumberProps> = ({ end, duration = 2000, suf
       setCount(Math.floor(easeProgress * end));
 
       if (progress < 1) {
-        window.requestAnimationFrame(step);
+        rafId = window.requestAnimationFrame(step);
       } else {
         setCount(end);
       }
     };
 
-    window.requestAnimationFrame(step);
+    rafId = window.requestAnimationFrame(step);
+    return () => cancelAnimationFrame(rafId);
   }, [end, duration, hasAnimated]);
 
   return (

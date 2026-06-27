@@ -104,6 +104,7 @@ const SplitText = ({
               },
               onComplete: () => {
                 animationCompletedRef.current = true;
+                if (el) el.style.willChange = 'auto';
                 onCompleteRef.current?.();
               },
               willChange: 'transform, opacity',

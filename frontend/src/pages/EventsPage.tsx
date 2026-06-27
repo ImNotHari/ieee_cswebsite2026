@@ -9,22 +9,25 @@ const EventsPage = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let cancelled = false;
+    const fetchEvents = async () => {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('events')
+        .select('*')
+        .eq('is_published', true)
+        .order('created_at', { ascending: false });
+        
+      if (!cancelled && !error && data) {
+        setEvents(data);
+      }
+      if (!cancelled) {
+        setLoading(false);
+      }
+    };
     fetchEvents();
+    return () => { cancelled = true; };
   }, []);
-
-  const fetchEvents = async () => {
-    setLoading(true);
-    const { data, error } = await supabase
-      .from('events')
-      .select('*')
-      .eq('is_published', true)
-      .order('created_at', { ascending: false });
-      
-    if (!error && data) {
-      setEvents(data);
-    }
-    setLoading(false);
-  };
 
   return (
     <div className="page-container" style={{ padding: 'calc(var(--nav-height) + 4rem) 2rem 4rem 2rem', maxWidth: '1200px', margin: '0 auto' }}>

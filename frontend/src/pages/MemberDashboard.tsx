@@ -83,10 +83,12 @@ const MemberDashboard = () => {
   const fetchEvents = async () => {
     setLoadingEvents(true);
     const { data, error } = await supabase.from('events').select('*').order('created_at', { ascending: false });
-    if (!error && data) {
-      setEvents(data);
+    if (isMounted.current) {
+      if (!error && data) {
+        setEvents(data);
+      }
+      setLoadingEvents(false);
     }
-    setLoadingEvents(false);
   };
 
   return (
