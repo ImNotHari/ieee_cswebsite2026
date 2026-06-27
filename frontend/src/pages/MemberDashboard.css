@@ -185,7 +185,7 @@
 .sidebar-links li:hover {
   background: var(--color-bg-hover);
   color: var(--color-text-primary);
-  transform: translateX(6px);
+  transform: translateX(12px) scale(1.03);
 }
 
 .sidebar-links li.active {
