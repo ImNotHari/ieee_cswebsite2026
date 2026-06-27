@@ -65,6 +65,7 @@ If all required fields (title, date, time) can be confidently determined, output
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ text: '', type: '' });
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [dragActive, setDragActive] = useState(false);
   const isMounted = useRef(true);
 
   useEffect(() => {
@@ -129,6 +130,25 @@ If all required fields (title, date, time) can be confidently determined, output
     }
     resetForm();
     setMode(newMode);
+  };
+
+  const handleDrag = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setDragActive(true);
+    } else if (e.type === "dragleave") {
+      setDragActive(false);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      setSelectedFile(e.dataTransfer.files[0]);
+    }
   };
 
   const uploadPoster = async (): Promise<string | null> => {
@@ -443,7 +463,20 @@ If all required fields (title, date, time) can be confidently determined, output
           <h3 className="dashboard-section-title">Media (Optional)</h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
             <label className="form-label">Event Cover Image</label>
-            <label className="custom-file-upload" htmlFor="file" style={{ padding: selectedFile ? '0' : '1.5rem', overflow: 'hidden' }}>
+            <label 
+              className={`custom-file-upload ${dragActive ? 'drag-active' : ''}`} 
+              htmlFor="file" 
+              onDragEnter={handleDrag}
+              onDragLeave={handleDrag}
+              onDragOver={handleDrag}
+              onDrop={handleDrop}
+              style={{ 
+                padding: selectedFile ? '0' : '1.5rem', 
+                overflow: 'hidden',
+                borderColor: dragActive ? 'var(--accent-color)' : '',
+                background: dragActive ? 'rgba(255, 255, 255, 0.05)' : ''
+              }}
+            >
             {selectedFile ? (
               <div style={{ width: '100%', height: '100%', position: 'relative' }}>
                 <img src={URL.createObjectURL(selectedFile)} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
