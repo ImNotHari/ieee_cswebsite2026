@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import AnimatedFace from '../components/AnimatedFace';
 import ThemeToggle from '../components/ThemeToggle';
 import AddEventPanel from '../components/AddEventPanel';
@@ -42,9 +42,7 @@ const MemberDashboard = () => {
     return () => clearTimeout(id);
   }, [message.text]);
 
-  const safeSetState = useCallback((fn: () => void) => {
-    if (isMounted.current) fn();
-  }, []);
+
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const [sidebarOpen] = useState(true);
   
