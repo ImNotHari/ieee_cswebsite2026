@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import AnimatedFace from '../components/AnimatedFace';
 import ThemeToggle from '../components/ThemeToggle';
+import AddEventPanel from '../components/AddEventPanel';
 import { supabase } from '../lib/supabase';
 import './MemberDashboard.css';
 import '../components/Navbar.css';
@@ -21,17 +22,7 @@ const MemberDashboard = () => {
     return () => subscription.unsubscribe();
   }, []);
   
-  // Form State
-  const [title, setTitle] = useState('');
-  const [eventDate, setEventDate] = useState('');
-  const [sidebarOpen] = useState(true);
-  const [time, setTime] = useState('');
-  const [location, setLocation] = useState('');
-  const [description, setDescription] = useState('');
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  
   // UI State
-  const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ text: '', type: '' });
   const isMounted = useRef(true);
 
@@ -54,8 +45,8 @@ const MemberDashboard = () => {
   const safeSetState = useCallback((fn: () => void) => {
     if (isMounted.current) fn();
   }, []);
-  const [errors, setErrors] = useState<Record<string, string>>({});
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
+  const [sidebarOpen] = useState(true);
   
   // Events List State
   const [events, setEvents] = useState<any[]>([]);
@@ -63,23 +54,11 @@ const MemberDashboard = () => {
   const [editingEventId, setEditingEventId] = useState<string | null>(null);
 
   const handleEditClick = (event: any) => {
-    setTitle(event.title || '');
-    setEventDate(event.date || '');
-    setTime(event.time || '');
-    setLocation(event.location || '');
-    setDescription(event.description || '');
-    setSelectedFile(null);
     setEditingEventId(event.id);
     setActiveTab('edit');
   };
 
   const handleCancelEdit = () => {
-    setTitle('');
-    setEventDate('');
-    setTime('');
-    setLocation('');
-    setDescription('');
-    setSelectedFile(null);
     setEditingEventId(null);
     setActiveTab('view');
   };
@@ -110,127 +89,6 @@ const MemberDashboard = () => {
       setEvents(data);
     }
     setLoadingEvents(false);
-  };
-
-  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEventDate(e.target.value); // type="date" automatically gives YYYY-MM-DD
-  };
-
-  const handlePublish = async () => {
-    setMessage({ text: '', type: '' });
-
-    // Force a session check before doing anything
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
-      setIsAuthenticated(false);
-      return;
-    }
-    
-    const newErrors: Record<string, string> = {};
-    if (!title) newErrors.title = 'Event Title is required';
-    if (!eventDate) newErrors.eventDate = 'Date is required';
-    if (!time) newErrors.time = 'Time is required';
-
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      setMessage({ text: 'Please fill in all required fields.', type: 'error' });
-      return;
-    }
-    setErrors({});
-
-    // type="date" already ensures the format is YYYY-MM-DD
-    const dbDate = eventDate;
-    
-    // Validate that it's a real calendar date
-    const parsedDate = new Date(dbDate);
-    if (isNaN(parsedDate.getTime())) {
-      setMessage({ text: 'Invalid calendar date.', type: 'error' });
-      return;
-    }
-
-    setLoading(true);
-    let posterPath = null;
-
-    // Upload Image
-    if (selectedFile) {
-      const fileExt = selectedFile.name.split('.').pop();
-      const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
-      const { data: uploadData, error: uploadError } = await supabase.storage
-        .from('posters')
-        .upload(fileName, selectedFile);
-
-      if (uploadError) {
-        safeSetState(() => {
-          setMessage({ text: `Image upload failed: ${uploadError.message}`, type: 'error' });
-          setLoading(false);
-        });
-        return;
-      }
-      posterPath = uploadData.path;
-    }
-
-    // Insert or Update Event
-    if (editingEventId) {
-      const updateData: any = {
-        title,
-        date: dbDate,
-        time,
-        location,
-        description,
-        is_published: true
-      };
-      if (posterPath) {
-        updateData.poster_path = posterPath;
-      }
-      
-      const { error: updateError } = await supabase
-        .from('events')
-        .update(updateData)
-        .eq('id', editingEventId);
-
-      if (updateError) {
-        safeSetState(() => {
-          setMessage({ text: `Failed to update event: ${updateError.message}`, type: 'error' });
-          setLoading(false);
-        });
-      } else {
-        safeSetState(() => {
-          setMessage({ text: 'Event updated successfully!', type: 'success' });
-          setLoading(false);
-          handleCancelEdit();
-        });
-      }
-    } else {
-      const { error: insertError } = await supabase.from('events').insert({
-        title,
-        date: dbDate,
-        time,
-        location,
-        description,
-        poster_path: posterPath,
-        is_published: true // auto-publish for now
-      });
-
-      if (insertError) {
-        safeSetState(() => {
-          setMessage({ text: `Failed to save event: ${insertError.message}`, type: 'error' });
-          setLoading(false);
-        });
-      } else {
-        safeSetState(() => {
-          setMessage({ text: 'Event published successfully!', type: 'success' });
-          setLoading(false);
-          // Reset form
-          setTitle('');
-          setEventDate('');
-          setTime('');
-          setLocation('');
-          setDescription('');
-          setSelectedFile(null);
-        });
-      }
-    }
-    setLoading(false);
   };
 
   return (
@@ -313,157 +171,19 @@ const MemberDashboard = () => {
         </aside>
         <main className="dashboard-main glass-panel">
           {(activeTab === 'add' || (activeTab === 'edit' && editingEventId)) && (
-            <>
-              <div className="dashboard-header-row">
-                <h1 className="gradient-text">{activeTab === 'edit' ? 'Edit Event' : 'Add New Event'}</h1>
-              </div>
-              <form style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxWidth: '500px', marginTop: '1rem' }}>
-                
-                <div className="form-section">
-                  <h3 className="dashboard-section-title">Basic Info</h3>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                    <label className="form-label">Event Title <span style={{ color: '#ff6b6b' }}>*</span></label>
-                    <input 
-                      type="text" 
-                      placeholder="Enter the event title..." 
-                      value={title} 
-                      onChange={e => { 
-                        setTitle(e.target.value); 
-                        if (!e.target.value.trim()) {
-                          setErrors(prev => ({...prev, title: 'Event Title is required'}));
-                        } else {
-                          setErrors(prev => ({...prev, title: ''}));
-                        }
-                      }} 
-                      onBlur={(e) => {
-                        if (!e.target.value.trim()) {
-                          setErrors(prev => ({...prev, title: 'Event Title is required'}));
-                        }
-                      }}
-                      className={`form-input ${errors.title ? 'error' : ''}`} 
-                    />
-                    {errors.title && <span className="error-text" style={{ color: '#ff6b6b', fontSize: '0.85rem' }}>{errors.title}</span>}
-                  </div>
-                </div>
-                
-                <div className="form-section">
-                  <h3 className="dashboard-section-title">Schedule</h3>
-                  <div className="form-row">
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1 }}>
-                      <label className="form-label">Date <span style={{ color: '#ff6b6b' }}>*</span></label>
-                      <input 
-                        type="date" 
-                        value={eventDate} 
-                        onChange={e => { 
-                          handleDateChange(e); 
-                          if (!e.target.value) {
-                            setErrors(prev => ({...prev, eventDate: 'Date is required'}));
-                          } else {
-                            setErrors(prev => ({...prev, eventDate: ''}));
-                          }
-                        }} 
-                        onBlur={(e) => {
-                          if (!e.target.value) {
-                            setErrors(prev => ({...prev, eventDate: 'Date is required'}));
-                          }
-                        }}
-                        className={`form-input ${errors.eventDate ? 'error' : ''}`} 
-                      />
-                      {errors.eventDate && <span className="error-text" style={{ color: '#ff6b6b', fontSize: '0.85rem' }}>{errors.eventDate}</span>}
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1 }}>
-                      <label className="form-label">Time <span style={{ color: '#ff6b6b' }}>*</span></label>
-                      <input 
-                        type="time" 
-                        step="60" 
-                        value={time} 
-                        onChange={e => { 
-                          setTime(e.target.value); 
-                          if (!e.target.value) {
-                            setErrors(prev => ({...prev, time: 'Time is required'}));
-                          } else {
-                            setErrors(prev => ({...prev, time: ''}));
-                          }
-                        }} 
-                        onBlur={(e) => {
-                          if (!e.target.value) {
-                            setErrors(prev => ({...prev, time: 'Time is required'}));
-                          }
-                        }}
-                        className={`form-input ${errors.time ? 'error' : ''}`} 
-                      />
-                      {errors.time && <span className="error-text" style={{ color: '#ff6b6b', fontSize: '0.85rem' }}>{errors.time}</span>}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="form-section">
-                  <h3 className="dashboard-section-title">Details</h3>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                      <label className="form-label">Location (Optional)</label>
-                      <input type="text" placeholder="e.g. Main Auditorium" value={location} onChange={e => setLocation(e.target.value)} className="form-input" />
-                    </div>
-                    
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                      <label className="form-label">Event Description</label>
-                      <textarea placeholder="Write something about the event..." value={description} onChange={e => setDescription(e.target.value)} className="form-input" style={{ minHeight: '150px' }} />
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="form-section">
-                  <h3 className="dashboard-section-title">Media</h3>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                    <label className="form-label">Event Cover Image</label>
-                    <label className="custom-file-upload" htmlFor="file" style={{ padding: selectedFile ? '0' : '1.5rem', overflow: 'hidden' }}>
-                    {selectedFile ? (
-                      <div style={{ width: '100%', height: '100%', position: 'relative' }}>
-                        <img src={URL.createObjectURL(selectedFile)} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                        <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0, transition: 'opacity 0.2s' }} onMouseEnter={e => e.currentTarget.style.opacity = '1'} onMouseLeave={e => e.currentTarget.style.opacity = '0'}>
-                          <span style={{ color: 'white', fontWeight: 500 }}>Change Image</span>
-                        </div>
-                      </div>
-                    ) : (
-                      <>
-                        <div className="icon">
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="var(--sky-aqua)" viewBox="0 0 24 24" width="48" height="48">
-                            <path fill="currentColor" d="M10 1C9.73478 1 9.48043 1.10536 9.29289 1.29289L3.29289 7.29289C3.10536 7.48043 3 7.73478 3 8V20C3 21.6569 4.34315 23 6 23H7C7.55228 23 8 22.5523 8 22C8 21.4477 7.55228 21 7 21H6C5.44772 21 5 20.5523 5 20V9H10C10.5523 9 11 8.55228 11 8V3H18C18.5523 3 19 3.44772 19 4V9C19 9.55228 19.4477 10 20 10C20.5523 10 21 9.55228 21 9V4C21 2.34315 19.6569 1 18 1H10ZM9 7H6.41421L9 4.41421V7ZM14 15.5C14 14.1193 15.1193 13 16.5 13C17.8807 13 19 14.1193 19 15.5V16V17H20C21.1046 17 22 17.8954 22 19C22 20.1046 21.1046 21 20 21H13C11.8954 21 11 20.1046 11 19C11 17.8954 11.8954 17 13 17H14V16V15.5ZM16.5 11C14.142 11 12.2076 12.8136 12.0156 15.122C10.2825 15.5606 9 17.1305 9 19C9 21.2091 10.7909 23 13 23H20C22.2091 23 24 21.2091 24 19C24 17.1305 22.7175 15.5606 20.9844 15.122C20.7924 12.8136 18.858 11 16.5 11Z" clipRule="evenodd" fillRule="evenodd"></path>
-                          </svg>
-                        </div>
-                        <div className="text">
-                          <span>Click or drag image here</span>
-                        </div>
-                      </>
-                    )}
-                    <input type="file" id="file" accept="image/*" onChange={(e) => setSelectedFile(e.target.files?.[0] || null)} />
-                  </label>
-                  </div>
-                </div>
-                
-                <div style={{ display: 'flex', gap: '1rem' }}>
-                  <button 
-                    type="button" 
-                    className="publish-btn primary-cta" 
-                    onClick={handlePublish} 
-                    disabled={loading || !title.trim() || !eventDate || !time}
-                    style={{ opacity: (!title.trim() || !eventDate || !time) ? 0.5 : 1, cursor: (!title.trim() || !eventDate || !time) ? 'not-allowed' : 'pointer', flex: 1 }}
-                  >
-                    {loading ? (activeTab === 'edit' ? 'Updating...' : 'Publishing...') : (activeTab === 'edit' ? 'Update Event' : 'Publish Event')}
-                  </button>
-                  {activeTab === 'edit' && (
-                    <button 
-                      type="button" 
-                      className="publish-btn" 
-                      onClick={handleCancelEdit} 
-                      style={{ marginTop: '1rem', padding: '1rem', flex: 1, background: 'rgba(255,255,255,0.1)', color: 'white', borderRadius: '8px' }}
-                    >
-                      Cancel Edit
-                    </button>
-                  )}
-                </div>
-              </form>
-            </>
+            <AddEventPanel 
+              onSuccess={() => {
+                fetchEvents();
+                if (activeTab === 'add') {
+                  setActiveTab('view');
+                } else if (activeTab === 'edit') {
+                  handleCancelEdit();
+                }
+              }}
+              editingEvent={events.find(e => e.id === editingEventId)}
+              onCancelEdit={handleCancelEdit}
+              activeTab={activeTab}
+            />
           )}
           {(activeTab === 'edit' && !editingEventId) && (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>

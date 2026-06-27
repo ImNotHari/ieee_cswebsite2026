@@ -1,7 +1,7 @@
 .event-card {
   position: relative;
   width: 100%;
-  height: 300px;
+  margin-bottom: 2rem;
   background-color: var(--color-bg-secondary);
   border-radius: 10px;
   display: flex;
@@ -16,7 +16,7 @@
 
 .event-card-img {
   width: 100%;
-  height: 100%;
+  height: auto;
   object-fit: cover;
   transition: all 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
@@ -83,4 +83,23 @@
   font-size: 0.95rem;
   color: var(--color-text-secondary);
   line-height: 1.6;
+}
+
+/* react-masonry-css styles */
+.my-masonry-grid {
+  display: -webkit-box; /* Not needed if autoprefixing */
+  display: -ms-flexbox; /* Not needed if autoprefixing */
+  display: flex;
+  margin-left: -2rem; /* gutter size offset */
+  width: auto;
+}
+
+.my-masonry-grid_column {
+  padding-left: 2rem; /* gutter size */
+  background-clip: padding-box;
+}
+
+/* Style your items */
+.my-masonry-grid_column > div {
+  margin-bottom: 2rem;
 }

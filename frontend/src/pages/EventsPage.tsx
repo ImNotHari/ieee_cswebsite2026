@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import AnimatedFace from '../components/AnimatedFace';
+import Masonry from 'react-masonry-css';
 import './EventsPage.css';
 
 const EventsPage = () => {
@@ -56,7 +57,11 @@ const EventsPage = () => {
           </div>
         </div>
       ) : (
-        <div className="animate-fade-in-up stagger-1" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '2rem' }}>
+        <Masonry
+          breakpointCols={{ default: 3, 1100: 2, 700: 1 }}
+          className="my-masonry-grid animate-fade-in-up stagger-1"
+          columnClassName="my-masonry-grid_column"
+        >
           {events.map(event => (
             <div key={event.id} className="event-card">
               {event.poster_path ? (
@@ -82,7 +87,7 @@ const EventsPage = () => {
               </div>
             </div>
           ))}
-        </div>
+        </Masonry>
       )}
     </div>
   );
