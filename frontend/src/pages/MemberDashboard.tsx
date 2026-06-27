@@ -525,7 +525,7 @@ const MemberDashboard = () => {
                           {event.description}
                         </p>
                       )}
-                      <div style={{ display: 'flex', gap: '0.5rem', marginTop: 'auto', paddingTop: '1rem' }}>
+                      <div style={{ display: 'flex', gap: '0.5rem', marginTop: 'auto' }}>
                         <button className="publish-btn" onClick={() => handleEditClick(event)} style={{ flex: 1, padding: '0.5rem', fontSize: '0.9rem' }}>Edit</button>
                         <button className="publish-btn" onClick={() => handleDelete(event.id)} style={{ flex: 1, padding: '0.5rem', fontSize: '0.9rem', background: 'rgba(255, 107, 107, 0.2)', color: '#ff6b6b' }}>Delete</button>
                       </div>
