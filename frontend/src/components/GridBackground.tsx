@@ -36,6 +36,7 @@ const GridBackground = () => {
     let cells: any[] = [];
     let frame = 0;
     let animationFrameId: number;
+    let paused = false;
 
     const buildCells = () => {
       const cols = Math.ceil(W / CONFIG.cellSize) + 1;
@@ -147,21 +148,37 @@ const GridBackground = () => {
     };
 
     const loop = () => {
+      if (paused) return;
       ctx.clearRect(0, 0, W, H);
       drawGrid();
-
       frame++;
       if (frame % CONFIG.spawnInterval === 0) spawn();
-
       updateCells();
       animationFrameId = requestAnimationFrame(loop);
     };
 
+    const handleVisibility = () => {
+      if (document.hidden) {
+        paused = true;
+        cancelAnimationFrame(animationFrameId);
+      } else {
+        paused = false;
+        animationFrameId = requestAnimationFrame(loop);
+      }
+    };
+
+
+
+    document.addEventListener('visibilitychange', handleVisibility);
     window.addEventListener('resize', resize);
+    window.addEventListener('themeChange', updateColors);
+    
+    updateColors();
     resize();
-    loop();
+    animationFrameId = requestAnimationFrame(loop);
 
     return () => {
+      document.removeEventListener('visibilitychange', handleVisibility);
       window.removeEventListener('resize', resize);
       window.removeEventListener('themeChange', updateColors);
       cancelAnimationFrame(animationFrameId);

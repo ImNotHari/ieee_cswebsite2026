@@ -1,8 +1,10 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import AnimatedFace from '../components/AnimatedFace';
 import ThemeToggle from '../components/ThemeToggle';
 import AddEventPanel from '../components/AddEventPanel';
 import { supabase } from '../lib/supabase';
+import { EVENT_COLUMNS } from '../lib/columns';
+import type { EnrichedEvent } from '../lib/columns';
 import './MemberDashboard.css';
 import '../components/Navbar.css';
 
@@ -47,9 +49,16 @@ const MemberDashboard = () => {
   const [sidebarOpen] = useState(true);
   
   // Events List State
-  const [events, setEvents] = useState<any[]>([]);
+  const PAGE_SIZE = 20;
+  const [events, setEvents] = useState<EnrichedEvent[]>([]);
   const [loadingEvents, setLoadingEvents] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
   const [editingEventId, setEditingEventId] = useState<string | null>(null);
+
+  const editingEvent = useMemo(() => {
+    return events.find(e => e.id === editingEventId);
+  }, [events, editingEventId]);
 
   const handleEditClick = (event: any) => {
     setEditingEventId(event.id);
@@ -59,6 +68,30 @@ const MemberDashboard = () => {
   const handleCancelEdit = () => {
     setEditingEventId(null);
     setActiveTab('view');
+  };
+
+  const fetchEvents = async (offset = 0, append = false) => {
+    if (append) setLoadingMore(true); else setLoadingEvents(true);
+    
+    const { data, error } = await supabase
+      .from('events')
+      .select(EVENT_COLUMNS.dashboard)
+      .order('created_at', { ascending: false })
+      .range(offset, offset + PAGE_SIZE - 1);
+      
+    if (isMounted.current) {
+      if (!error && data) {
+        const enriched: EnrichedEvent[] = data.map(e => ({
+          ...e,
+          posterUrl: e.poster_path
+            ? supabase.storage.from('posters').getPublicUrl(e.poster_path).data.publicUrl
+            : null
+        }));
+        setEvents(prev => append ? [...prev, ...enriched] : enriched);
+        setHasMore(data.length === PAGE_SIZE);
+      }
+      if (append) setLoadingMore(false); else setLoadingEvents(false);
+    }
   };
 
   const handleDelete = async (id: string) => {
@@ -76,19 +109,14 @@ const MemberDashboard = () => {
 
   useEffect(() => {
     if (activeTab === 'view') {
-      fetchEvents();
+      fetchEvents(0, false);
     }
   }, [activeTab]);
 
-  const fetchEvents = async () => {
-    setLoadingEvents(true);
-    const { data, error } = await supabase.from('events').select('*').order('created_at', { ascending: false });
-    if (isMounted.current) {
-      if (!error && data) {
-        setEvents(data);
-      }
-      setLoadingEvents(false);
-    }
+
+  const handleLoadMore = () => {
+    if (loadingMore || !hasMore) return;
+    fetchEvents(events.length, true);
   };
 
   return (
@@ -111,8 +139,8 @@ const MemberDashboard = () => {
         <nav className="dashboard-navbar">
         <div className="dashboard-logo" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
           <div className="nav-logo-wrapper">
-            <img src="/ieee-logo-geci.png" alt="IEEE CS GECI" className="nav-logo-part circle-part" />
-            <img src="/ieee-logo-geci.png" alt="IEEE CS GECI" className="nav-logo-part text-part" />
+            <img src="/ieee-logo-geci.webp" alt="IEEE CS GECI" className="nav-logo-part circle-part" />
+            <img src="/ieee-logo-geci.webp" alt="IEEE CS GECI" className="nav-logo-part text-part" />
           </div>
         </div>
         <div className="dashboard-nav-right" style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: '1rem' }}>
@@ -173,14 +201,14 @@ const MemberDashboard = () => {
           {(activeTab === 'add' || (activeTab === 'edit' && editingEventId)) && (
             <AddEventPanel 
               onSuccess={() => {
-                fetchEvents();
+                fetchEvents(0, false);
                 if (activeTab === 'add') {
                   setActiveTab('view');
                 } else if (activeTab === 'edit') {
                   handleCancelEdit();
                 }
               }}
-              editingEvent={events.find(e => e.id === editingEventId)}
+              editingEvent={editingEvent}
               onCancelEdit={handleCancelEdit}
               activeTab={activeTab}
             />
@@ -198,7 +226,7 @@ const MemberDashboard = () => {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', width: '100%' }}>
               <div className="dashboard-header-row">
                 <h1 className="gradient-text">My Events</h1>
-                <button className="publish-btn" onClick={fetchEvents} style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}>Refresh</button>
+                <button className="publish-btn" onClick={() => fetchEvents(0, false)} style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}>Refresh</button>
               </div>
               
               {loadingEvents ? (
@@ -223,35 +251,51 @@ const MemberDashboard = () => {
                   </div>
                 </div>
               ) : (
-                <div className="animate-fade-in-up stagger-1" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.5rem' }}>
-                  {events.map(event => (
-                    <div key={event.id} className="glass-panel" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem', border: '1px solid rgba(255,255,255,0.1)' }}>
-                      {event.poster_path && (
-                        <img 
-                          src={`${supabase.storage.from('posters').getPublicUrl(event.poster_path).data.publicUrl}`} 
-                          alt={event.title} 
-                          style={{ width: '100%', height: '150px', objectFit: 'cover', borderRadius: '8px' }} 
-                        />
-                      )}
-                      <div>
-                        <h3 style={{ color: 'white', margin: '0 0 0.5rem 0', fontSize: '1.2rem' }}>{event.title}</h3>
-                        <div style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
-                          <span>{new Date(event.date).toLocaleDateString()} at {event.time.slice(0, 5)}</span>
-                          {event.location && <span>{event.location}</span>}
+                <>
+                  <div className="animate-fade-in-up stagger-1 event-grid">
+                    {events.map(event => (
+                      <div key={event.id} className="glass-panel dashboard-event-card">
+                        {event.poster_path && (
+                          <img 
+                            src={event.posterUrl || ''} 
+                            alt={event.title} 
+                            className="dashboard-event-img"
+                            loading="lazy"
+                          />
+                        )}
+                        <div>
+                          <h3 className="dashboard-event-title">{event.title}</h3>
+                          <div className="dashboard-event-meta">
+                            <span>{new Date(event.date!).toLocaleDateString()} at {event.time!.slice(0, 5)}</span>
+                            {event.location && <span>{event.location}</span>}
+                          </div>
+                        </div>
+                        {event.description && (
+                          <p className="dashboard-event-desc">
+                            {event.description}
+                          </p>
+                        )}
+                        <div className="dashboard-event-actions">
+                          <button className="publish-btn btn-edit" onClick={() => handleEditClick(event)}>Edit</button>
+                          <button className="publish-btn btn-delete" onClick={() => handleDelete(event.id)}>Delete</button>
                         </div>
                       </div>
-                      {event.description && (
-                        <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.9rem', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden', margin: 0 }}>
-                          {event.description}
-                        </p>
-                      )}
-                      <div style={{ display: 'flex', gap: '0.5rem', marginTop: 'auto' }}>
-                        <button className="publish-btn" onClick={() => handleEditClick(event)} style={{ flex: 1, padding: '0.5rem', fontSize: '0.9rem' }}>Edit</button>
-                        <button className="publish-btn" onClick={() => handleDelete(event.id)} style={{ flex: 1, padding: '0.5rem', fontSize: '0.9rem', background: 'rgba(255, 107, 107, 0.2)', color: '#ff6b6b' }}>Delete</button>
-                      </div>
+                    ))}
+                  </div>
+                  
+                  {hasMore && !loadingEvents && events.length > 0 && (
+                    <div style={{ textAlign: 'center', marginTop: '1rem' }}>
+                      <button 
+                        className="publish-btn" 
+                        onClick={handleLoadMore}
+                        disabled={loadingMore}
+                        style={{ minWidth: '200px', margin: '0 auto' }}
+                      >
+                        {loadingMore ? 'Loading...' : 'Load More Events'}
+                      </button>
                     </div>
-                  ))}
-                </div>
+                  )}
+                </>
               )}
             </div>
           )}

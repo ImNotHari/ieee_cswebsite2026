@@ -23,13 +23,31 @@ const OfficerCarousel = () => {
     setActive(prev => (prev + dir + N) % N);
   }, [N]);
 
+  const carouselRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
+    let isVisible = false;
+
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (!isVisible) return;
       if (e.key === 'ArrowLeft') rotate(-1);
       if (e.key === 'ArrowRight') rotate(1);
     };
+
     document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
+
+    const observer = new IntersectionObserver(([entry]) => {
+      isVisible = entry.isIntersecting;
+    }, { threshold: 0.5 });
+
+    if (carouselRef.current) {
+      observer.observe(carouselRef.current);
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      observer.disconnect();
+    };
   }, [rotate]);
 
   useEffect(() => {
@@ -48,7 +66,7 @@ const OfficerCarousel = () => {
   };
 
   return (
-    <div className="carousel-wrapper">
+    <div className="carousel-wrapper" ref={carouselRef}>
       <button className="carousel-nav-btn prev" onClick={() => rotate(-1)}>&#8592;</button>
       <button className="carousel-nav-btn next" onClick={() => rotate(1)}>&#8594;</button>
 

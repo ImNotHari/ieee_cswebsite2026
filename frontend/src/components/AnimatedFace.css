@@ -114,3 +114,40 @@
     transform: translate(0, 22.5px);
   }
 }
+
+.sun-rays-container {
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  z-index: -1;
+  overflow: hidden;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  animation: fade-in-rays 1s forwards 1.5s;
+}
+
+.sun-rays {
+  width: 800px;
+  height: 800px;
+  background: repeating-conic-gradient(
+    from 0deg,
+    var(--accent-color) 0deg 15deg,
+    transparent 15deg 30deg
+  );
+  opacity: 0.15;
+  animation: rotate-rays 20s linear infinite;
+}
+
+@keyframes rotate-rays {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes fade-in-rays {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+

@@ -16,10 +16,13 @@ const CountUpNumber: React.FC<CountUpNumberProps> = ({ end, duration = 2000, suf
     const node = nodeRef.current;
     if (!node) return;
 
+    let hasTriggered = false;
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && !hasAnimated) {
+        if (entries[0].isIntersecting && !hasTriggered) {
+          hasTriggered = true;
           setHasAnimated(true);
+          observer.disconnect();
         }
       },
       { threshold: 0.1 }
@@ -28,9 +31,9 @@ const CountUpNumber: React.FC<CountUpNumberProps> = ({ end, duration = 2000, suf
     observer.observe(node);
 
     return () => {
-      observer.unobserve(node);
+      observer.disconnect();
     };
-  }, [hasAnimated]);
+  }, []);
 
   useEffect(() => {
     if (!hasAnimated) return;

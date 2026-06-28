@@ -53,6 +53,14 @@ const Navbar = () => {
     }
   };
 
+  const scrollToTop = (e: React.MouseEvent) => {
+    if (location.pathname === '/') {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    closeMenu();
+  };
+
   const getPrefetchHandlers = (Component: any) => ({
     onMouseEnter: () => Component.preload?.(),
     onTouchStart: () => Component.preload?.(),
@@ -65,14 +73,14 @@ const Navbar = () => {
         <div className="nav-logo" style={{ zIndex: 1001 }}>
           <Link to="/" onClick={closeMenu} style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', minHeight: '44px', minWidth: '44px' }}>
             <div className="nav-logo-wrapper">
-              <img src="/ieee-logo-geci.png" alt="IEEE CS GECI" className="nav-logo-part circle-part" />
-              <img src="/ieee-logo-geci.png" alt="IEEE CS GECI" className="nav-logo-part text-part" />
+              <img src="/ieee-logo-geci.webp" alt="IEEE CS GECI" className="nav-logo-part circle-part" />
+              <img src="/ieee-logo-geci.webp" alt="IEEE CS GECI" className="nav-logo-part text-part" />
             </div>
           </Link>
         </div>
 
         <div className="nav-links desktop-links">
-          <Link to="/" className="nav-btn">Home</Link>
+          <Link to="/" className="nav-btn" onClick={scrollToTop}>Home</Link>
           <button className="nav-btn" onClick={() => scrollToSection('about')}>About</button>
           <button className="nav-btn" onClick={() => scrollToSection('achievements')}>Achievements</button>
           <button className="nav-btn" onClick={() => scrollToSection('excecom')}>Excecom</button>
@@ -115,7 +123,7 @@ const Navbar = () => {
           ref={menuRef}
           tabIndex={-1}
         >
-          <Link to="/" className="nav-btn" onClick={closeMenu}>Home</Link>
+          <Link to="/" className="nav-btn" onClick={scrollToTop}>Home</Link>
           <button className="nav-btn" onClick={() => scrollToSection('about')}>About</button>
           <button className="nav-btn" onClick={() => scrollToSection('achievements')}>Achievements</button>
           <button className="nav-btn" onClick={() => scrollToSection('excecom')}>Excecom</button>

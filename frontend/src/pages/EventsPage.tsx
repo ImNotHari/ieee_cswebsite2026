@@ -1,33 +1,80 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
+import { EVENT_COLUMNS } from '../lib/columns';
+import type { EnrichedEvent } from '../lib/columns';
 import AnimatedFace from '../components/AnimatedFace';
 import Masonry from 'react-masonry-css';
 import './EventsPage.css';
 
+const PAGE_SIZE = 20;
+
 const EventsPage = () => {
-  const [events, setEvents] = useState<any[]>([]);
+  const [events, setEvents] = useState<EnrichedEvent[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
-    const fetchEvents = async () => {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from('events')
-        .select('*')
-        .eq('is_published', true)
-        .order('created_at', { ascending: false });
-        
-      if (!cancelled && !error && data) {
-        setEvents(data);
-      }
-      if (!cancelled) {
-        setLoading(false);
+
+    const fetchEvents = async (offset: number, append: boolean) => {
+      if (append) setLoadingMore(true); else setLoading(true);
+
+      try {
+        const { data, error } = await supabase
+          .from('events')
+          .select(EVENT_COLUMNS.list)
+          .eq('is_published', true)
+          .order('created_at', { ascending: false })
+          .range(offset, offset + PAGE_SIZE - 1);
+          
+        if (!cancelled && !error && data) {
+          const enriched: EnrichedEvent[] = data.map(e => ({
+            ...e,
+            posterUrl: e.poster_path
+              ? supabase.storage.from('posters').getPublicUrl(e.poster_path).data.publicUrl
+              : null
+          }));
+          setEvents(prev => append ? [...prev, ...enriched] : enriched);
+          setHasMore(data.length === PAGE_SIZE);
+        }
+      } catch (err) {
+        if (!cancelled) console.error('Error fetching events:', err);
+      } finally {
+        if (!cancelled) {
+          if (append) setLoadingMore(false); else setLoading(false);
+        }
       }
     };
-    fetchEvents();
+
+    fetchEvents(0, false);
+
     return () => { cancelled = true; };
   }, []);
+
+  const handleLoadMore = () => {
+    if (loadingMore || !hasMore) return;
+    setLoadingMore(true);
+    supabase
+      .from('events')
+      .select(EVENT_COLUMNS.list)
+      .eq('is_published', true)
+      .order('created_at', { ascending: false })
+      .range(events.length, events.length + PAGE_SIZE - 1)
+      .then(({ data, error }) => {
+        if (!error && data) {
+          const enriched: EnrichedEvent[] = data.map(e => ({
+            ...e,
+            posterUrl: e.poster_path
+              ? supabase.storage.from('posters').getPublicUrl(e.poster_path).data.publicUrl
+              : null
+          }));
+          setEvents(prev => [...prev, ...enriched]);
+          setHasMore(data.length === PAGE_SIZE);
+        }
+        setLoadingMore(false);
+      });
+  };
 
   return (
     <div className="page-container" style={{ padding: 'calc(var(--nav-height) + 4rem) 2rem 4rem 2rem', maxWidth: '1200px', margin: '0 auto' }}>
@@ -70,17 +117,27 @@ const EventsPage = () => {
               {event.poster_path ? (
                 <img 
                   className="event-card-img"
-                  src={`${supabase.storage.from('posters').getPublicUrl(event.poster_path).data.publicUrl}`} 
-                  alt={event.title} 
+                  src={event.posterUrl || ''} 
+                  alt={event.title}
+                  loading="lazy"
                 />
               ) : (
                 <svg className="placeholder-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 5H4V19L13.2923 9.70649C13.6828 9.31595 14.3159 9.31591 14.7065 9.70641L20 15.0104V5ZM2 3.9934C2 3.44476 2.45531 3 2.9918 3H21.0082C21.556 3 22 3.44495 22 3.9934V20.0066C22 20.5552 21.5447 21 21.0082 21H2.9918C2.44405 21 2 20.5551 2 20.0066V3.9934ZM8 11C6.89543 11 6 10.1046 6 9C6 7.89543 6.89543 7 8 7C9.10457 7 10 7.89543 10 9C10 10.1046 9.10457 11 8 11Z"></path></svg>
               )}
               <div className="event-card__content">
-                <p className="event-card__title">{event.title}</p>
-                <div className="event-card__meta">
-                  <span>{new Date(event.date).toLocaleDateString()} at {event.time.slice(0, 5)}</span>
-                  {event.location && <span>{event.location}</span>}
+                <h3 className="event-title">{event.title}</h3>
+                <div className="event-meta">
+                  <span className="event-date">
+                    {new Date(event.date!).toLocaleDateString('en-US', { 
+                      weekday: 'long', 
+                      year: 'numeric', 
+                      month: 'long', 
+                      day: 'numeric' 
+                    })}
+                  </span>
+                  <span className="event-time">
+                    {event.time!.slice(0, 5)} {parseInt(event.time!.split(':')[0]) >= 12 ? 'PM' : 'AM'}
+                  </span>
                 </div>
                 {event.description && (
                   <p className="event-card__description">
@@ -91,6 +148,19 @@ const EventsPage = () => {
             </div>
           ))}
         </Masonry>
+      )}
+
+      {hasMore && !loading && events.length > 0 && (
+        <div style={{ textAlign: 'center', marginTop: '2rem' }}>
+          <button 
+            className="publish-btn" 
+            onClick={handleLoadMore}
+            disabled={loadingMore}
+            style={{ minWidth: '200px' }}
+          >
+            {loadingMore ? 'Loading...' : 'Load More Events'}
+          </button>
+        </div>
       )}
     </div>
   );

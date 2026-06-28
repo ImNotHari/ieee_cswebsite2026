@@ -1,6 +1,8 @@
 
 import './Footer.css';
 
+const CURRENT_YEAR = new Date().getFullYear();
+
 const Footer = () => {
   return (
     <footer className="footer-container">
@@ -10,8 +12,8 @@ const Footer = () => {
           <div className="footer-col-1">
             <div className="footer-brand">
               <div className="nav-logo-wrapper" style={{ height: '75px' }}>
-                <img src="/ieee-logo-geci.png" alt="IEEE CS GECI" className="nav-logo-part circle-part" />
-                <img src="/ieee-logo-geci.png" alt="IEEE CS GECI" className="nav-logo-part text-part" />
+                <img src="/ieee-logo-geci.webp" alt="IEEE CS GECI" className="nav-logo-part circle-part" />
+                <img src="/ieee-logo-geci.webp" alt="IEEE CS GECI" className="nav-logo-part text-part" />
               </div>
             </div>
             <p className="footer-description">
@@ -58,7 +60,7 @@ const Footer = () => {
         <div className="footer-divider"></div>
         
         <div className="footer-bottom">
-          <p>&copy; {new Date().getFullYear()} IEEE CS SBC GECI. All rights reserved.</p>
+          <p>&copy; {CURRENT_YEAR} IEEE CS SBC GECI. All rights reserved.</p>
         </div>
 
     </footer>

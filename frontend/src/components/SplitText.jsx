@@ -6,6 +6,9 @@ import { useGSAP } from '@gsap/react';
 
 gsap.registerPlugin(ScrollTrigger, GSAPSplitText, useGSAP);
 
+const DEFAULT_FROM = { opacity: 0, y: 40 };
+const DEFAULT_TO = { opacity: 1, y: 0 };
+
 const SplitText = ({
   text,
   className = '',
@@ -13,8 +16,8 @@ const SplitText = ({
   duration = 1.25,
   ease = 'power3.out',
   splitType = 'chars',
-  from = { opacity: 0, y: 40 },
-  to = { opacity: 1, y: 0 },
+  from = DEFAULT_FROM,
+  to = DEFAULT_TO,
   threshold = 0.1,
   rootMargin = '-100px',
   textAlign = 'center',

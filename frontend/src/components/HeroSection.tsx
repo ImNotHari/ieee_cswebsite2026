@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
+import { EVENT_COLUMNS } from '../lib/columns';
+import type { EnrichedEvent } from '../lib/columns';
 import { formatDistanceToNow } from 'date-fns';
 import './HeroSection.css';
 import AnimatedFace from './AnimatedFace';
@@ -8,35 +10,62 @@ import SplitText from './SplitText';
 import ErrorBoundary from './ErrorBoundary';
 
 const HeroSection = () => {
-  const [upcomingEvents, setUpcomingEvents] = useState<any[]>([]);
+  const [upcomingEvents, setUpcomingEvents] = useState<EnrichedEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [flippedCardId, setFlippedCardId] = useState<string | null>(null);
 
-  const fetchEvents = async () => {
-    try {
-      const now = new Date().toISOString();
-      const { data, error } = await supabase
-        .from('events')
-        .select('*')
-        .eq('is_published', true)
-        .gte('start_timestamp', now)
-        .order('start_timestamp', { ascending: true })
-        .limit(3);
-        
-      if (!error && data) {
-        setUpcomingEvents(data);
-      }
-    } catch (err) {
-      console.error('Error fetching upcoming events:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    fetchEvents();
-    const interval = setInterval(fetchEvents, 60000);
-    return () => clearInterval(interval);
+    let cancelled = false;
+    let interval: number;
+
+    const safeFetch = async () => {
+      if (cancelled || document.hidden) return;
+      try {
+        const now = new Date().toISOString();
+        const { data, error } = await supabase
+          .from('events')
+          .select(EVENT_COLUMNS.hero)
+          .eq('is_published', true)
+          .gte('start_timestamp', now)
+          .order('start_timestamp', { ascending: true })
+          .limit(3);
+          
+        if (!cancelled && !error && data) {
+          const enriched: EnrichedEvent[] = data.map(e => ({
+            ...e,
+            posterUrl: e.poster_path
+              ? supabase.storage.from('posters').getPublicUrl(e.poster_path).data.publicUrl
+              : null
+          }));
+          setUpcomingEvents(enriched);
+        }
+      } catch (err) {
+        if (!cancelled) console.error('Error fetching upcoming events:', err);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+
+    safeFetch();
+    interval = window.setInterval(safeFetch, 60000);
+
+    const handleVisibility = () => {
+      if (document.hidden) {
+        clearInterval(interval);
+      } else {
+        clearInterval(interval);
+        safeFetch();
+        interval = window.setInterval(safeFetch, 60000);
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibility);
+
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+      document.removeEventListener('visibilitychange', handleVisibility);
+    };
   }, []);
   return (
     <div className="hero-container section-container">
@@ -84,13 +113,13 @@ const HeroSection = () => {
                   {/* FRONT OF CARD */}
                   <div className="upcoming-event-card-front">
                     {event.poster_path ? (
-                      <img src={`${supabase.storage.from('posters').getPublicUrl(event.poster_path).data.publicUrl}`} alt={event.title} className="upcoming-event-img" />
+                      <img src={event.posterUrl || ''} alt={event.title} className="upcoming-event-img" loading="lazy" />
                     ) : (
                       <div className="upcoming-event-placeholder"></div>
                     )}
                     <div className="upcoming-event-info">
                       <h4>{event.title}</h4>
-                      <p className="upcoming-event-time">Starts {formatDistanceToNow(new Date(event.start_timestamp), { addSuffix: true })}</p>
+                      <p className="upcoming-event-time">Starts {formatDistanceToNow(new Date(event.start_timestamp!), { addSuffix: true })}</p>
                     </div>
                   </div>
                   

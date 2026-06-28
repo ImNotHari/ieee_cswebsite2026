@@ -9,35 +9,7 @@ interface AddEventPanelProps {
   activeTab: string;
 }
 
-export default function AddEventPanel({ onSuccess, editingEvent, onCancelEdit, activeTab }: AddEventPanelProps) {
-  // Mode State
-  const [mode, setMode] = useState<'normal' | 'json'>('normal');
-
-  // Form State
-  const [title, setTitle] = useState('');
-  const [eventDate, setEventDate] = useState('');
-  const [time, setTime] = useState('');
-  const [location, setLocation] = useState('');
-  const [description, setDescription] = useState('');
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-
-  const [jsonInput, setJsonInput] = useState('');
-  const [jsonErrors, setJsonErrors] = useState<Record<string, string>>({});
-  const [isCopied, setIsCopied] = useState(false);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const copyTimeoutRef = useRef<number>();
-
-  useEffect(() => {
-    if (!selectedFile) {
-      setPreviewUrl(null);
-      return;
-    }
-    const url = URL.createObjectURL(selectedFile);
-    setPreviewUrl(url);
-    return () => URL.revokeObjectURL(url);
-  }, [selectedFile]);
-
-  const promptText = `You are an expert data extraction assistant. I am providing you with an image of an event poster or flyer. Your task is to extract the event details from this image and output a single, valid JSON object that strictly adheres to my database schema.
+const promptText = `You are an expert data extraction assistant. I am providing you with an image of an event poster or flyer. Your task is to extract the event details from this image and output a single, valid JSON object that strictly adheres to my database schema.
 
 ### Step 1: Extraction & Formatting Rules
 Analyze the image and construct a JSON object using ONLY the following keys. Adhere strictly to the formatting rules:
@@ -66,6 +38,36 @@ If there are ambiguities, phrase your response like this:
 2. The poster mentions both 'Main Hall' and 'Room 101'. Which should be the primary location?"
 
 If all required fields (title, date, time) can be confidently determined, output ONLY the JSON object and nothing else.`;
+
+export default function AddEventPanel({ onSuccess, editingEvent, onCancelEdit, activeTab }: AddEventPanelProps) {
+  // Mode State
+  const [mode, setMode] = useState<'normal' | 'json'>('normal');
+
+  // Form State
+  const [title, setTitle] = useState('');
+  const [eventDate, setEventDate] = useState('');
+  const [time, setTime] = useState('');
+  const [location, setLocation] = useState('');
+  const [description, setDescription] = useState('');
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+  const [jsonInput, setJsonInput] = useState('');
+  const [jsonErrors, setJsonErrors] = useState<Record<string, string>>({});
+  const [isCopied, setIsCopied] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const copyTimeoutRef = useRef<number | undefined>(undefined);
+
+  useEffect(() => {
+    if (!selectedFile) {
+      setPreviewUrl(null);
+      return;
+    }
+    const url = URL.createObjectURL(selectedFile);
+    setPreviewUrl(url);
+    return () => URL.revokeObjectURL(url);
+  }, [selectedFile]);
+
+
 
   const handleCopyPrompt = () => {
     navigator.clipboard.writeText(promptText);

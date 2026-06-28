@@ -47,6 +47,7 @@ const FadeContent = ({
       paused: true,
       delay: getSeconds(delay),
       onComplete: () => {
+        gsap.set(el, { willChange: 'auto' });
         if (onComplete) onComplete();
         if (disappearAfter > 0) {
           gsap.to(el, {
